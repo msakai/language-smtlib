@@ -146,7 +146,7 @@ propFrameEqualsDirect cmds =
 
 loadSampleTests :: IO TestTree
 loadSampleTests = do
-  let dir = "toysolver" </> "samples" </> "smt"
+  let dir = "test" </> "samples" </> "smt"
   exists <- doesDirectoryExist dir
   if not exists
     then pure (testGroup "samples (skipped: directory not found)" [])

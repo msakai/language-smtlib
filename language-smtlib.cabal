@@ -20,6 +20,36 @@ build-type:     Simple
 extra-source-files:
     README.md
     CHANGELOG.md
+    test/samples/smt/assertion-stack-levels-2.smt2
+    test/samples/smt/assertion-stack-levels.smt2
+    test/samples/smt/assumptions.smt2
+    test/samples/smt/chain.smt2
+    test/samples/smt/declare-const.smt2
+    test/samples/smt/define-fun-rec.smt2
+    test/samples/smt/define-funs-rec.smt2
+    test/samples/smt/division-by-zero.smt2
+    test/samples/smt/echo.smt2
+    test/samples/smt/get-assertions.smt2
+    test/samples/smt/get-assignment.smt2
+    test/samples/smt/get-model.smt2
+    test/samples/smt/get-value.smt2
+    test/samples/smt/global-declarations.smt2
+    test/samples/smt/print-success.smt2
+    test/samples/smt/QF_ABV.smt2
+    test/samples/smt/QF_AUFLIA.smt2
+    test/samples/smt/QF_BV.smt2
+    test/samples/smt/QF_LIA.smt2
+    test/samples/smt/QF_LRA.smt2
+    test/samples/smt/QF_LRA_2.smt2
+    test/samples/smt/QF_UF.smt2
+    test/samples/smt/QF_UFLRA.smt2
+    test/samples/smt/quoted-symbol.smt2
+    test/samples/smt/reset-assertions.smt2
+    test/samples/smt/reset.smt2
+    test/samples/smt/set-info-status.smt2
+    test/samples/smt/swap.smt2
+    test/samples/smt/unicode-symbol.smt2
+    test/samples/smt/unsat-core.smt2
 
 source-repository head
   type: git
