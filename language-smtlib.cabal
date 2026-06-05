@@ -6,7 +6,9 @@ cabal-version: 2.2
 
 name:           language-smtlib
 version:        0.1.0.0
+synopsis:       Parsing, printing and incremental I/O for the SMT-LIB 2 format
 description:    Please see the README on GitHub at <https://github.com/msakai/language-smtlib#readme>
+category:       Language, SMT
 homepage:       https://github.com/msakai/language-smtlib#readme
 bug-reports:    https://github.com/msakai/language-smtlib/issues
 author:         Masahiro Sakai
@@ -25,16 +27,50 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Language.SMTLIB
+      Language.SMTLIB.Internal.Lexical
+      Language.SMTLIB.Parser
+      Language.SMTLIB.Parser.Command
+      Language.SMTLIB.Parser.Internal
+      Language.SMTLIB.Parser.Response
+      Language.SMTLIB.Parser.SExpr
+      Language.SMTLIB.Parser.Term
+      Language.SMTLIB.Printer
+      Language.SMTLIB.Printer.Class
+      Language.SMTLIB.Reader
+      Language.SMTLIB.Reader.Handle
+      Language.SMTLIB.Syntax
+      Language.SMTLIB.Syntax.Annotation
+      Language.SMTLIB.Syntax.Attribute
+      Language.SMTLIB.Syntax.Command
+      Language.SMTLIB.Syntax.Constant
+      Language.SMTLIB.Syntax.Datatype
+      Language.SMTLIB.Syntax.Identifier
+      Language.SMTLIB.Syntax.Response
+      Language.SMTLIB.Syntax.Term
   other-modules:
       Paths_language_smtlib
   autogen-modules:
       Paths_language_smtlib
   hs-source-dirs:
       src
+  default-extensions:
+      DeriveFoldable
+      DeriveFunctor
+      DeriveTraversable
+      LambdaCase
+      OverloadedStrings
+      PatternSynonyms
+      TupleSections
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , containers
+    , megaparsec >=9.0 && <10
+    , parser-combinators
+    , prettyprinter >=1.7
+    , scientific
+    , text
   default-language: Haskell2010
 
 executable language-smtlib-exe
@@ -45,23 +81,50 @@ executable language-smtlib-exe
       Paths_language_smtlib
   hs-source-dirs:
       app
+  default-extensions:
+      DeriveFoldable
+      DeriveFunctor
+      DeriveTraversable
+      LambdaCase
+      OverloadedStrings
+      PatternSynonyms
+      TupleSections
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , language-smtlib
+    , text
   default-language: Haskell2010
 
 test-suite language-smtlib-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Arbitrary
       Paths_language_smtlib
   autogen-modules:
       Paths_language_smtlib
   hs-source-dirs:
       test
+  default-extensions:
+      DeriveFoldable
+      DeriveFunctor
+      DeriveTraversable
+      LambdaCase
+      OverloadedStrings
+      PatternSynonyms
+      TupleSections
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      QuickCheck
+    , base >=4.7 && <5
+    , directory
+    , filepath
     , language-smtlib
+    , megaparsec
+    , quickcheck-instances
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , text
   default-language: Haskell2010
