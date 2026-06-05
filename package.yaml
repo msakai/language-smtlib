@@ -9,10 +9,10 @@ copyright:           "2026 Masahiro Sakai"
 extra-source-files:
 - README.md
 - CHANGELOG.md
+- test/samples/smt/*.smt2
 
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
+synopsis:            Parsing, printing and incremental I/O for the SMT-LIB 2 format
+category:            Language, SMT
 
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
@@ -21,6 +21,15 @@ description:         Please see the README on GitHub at <https://github.com/msak
 
 dependencies:
 - base >= 4.7 && < 5
+
+default-extensions:
+- DeriveFoldable
+- DeriveFunctor
+- DeriveTraversable
+- LambdaCase
+- OverloadedStrings
+- PatternSynonyms
+- TupleSections
 
 ghc-options:
 - -Wall
@@ -35,6 +44,13 @@ ghc-options:
 
 library:
   source-dirs: src
+  dependencies:
+  - containers
+  - megaparsec >= 9.0 && < 10
+  - parser-combinators
+  - prettyprinter >= 1.7
+  - scientific
+  - text
 
 executables:
   language-smtlib-exe:
@@ -46,6 +62,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - language-smtlib
+    - text
 
 tests:
   language-smtlib-test:
@@ -57,3 +74,12 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - language-smtlib
+    - QuickCheck
+    - quickcheck-instances
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck
+    - text
+    - directory
+    - filepath
+    - megaparsec
