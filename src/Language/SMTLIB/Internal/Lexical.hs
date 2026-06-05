@@ -18,7 +18,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 
 -- | The SMT-LIB 2.6 reserved words: the auxiliary tokens plus every command
--- name.  A simple symbol may not coincide with one of these, so a 'Symbol'
+-- name.  A simple symbol may not coincide with one of these, so a @Symbol@
 -- whose value is a reserved word must be printed quoted.
 reservedWords :: Set Text
 reservedWords = Set.fromList $

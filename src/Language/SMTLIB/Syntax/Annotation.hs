@@ -1,7 +1,7 @@
 -- | Source-location machinery for the (optionally) annotated SMT-LIB AST.
 --
 -- Every AST node carries a final type parameter @a@ that holds an annotation.
--- Use @()@ for a plain, location-free tree and 'SrcSpan' for a tree decorated
+-- Use @()@ for a plain, location-free tree and t'SrcSpan' for a tree decorated
 -- with source positions.  Because the annotation always sits in the last field
 -- of every constructor, the AST types derive 'Functor'/'Foldable'/'Traversable'
 -- over @a@, so 'noAnn' (= 'void') erases all annotations uniformly.

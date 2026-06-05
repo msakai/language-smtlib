@@ -1,7 +1,7 @@
 -- | Reading S-expressions and commands incrementally from a 'Handle' (a file, a
 -- socket, or a pipe to a running solver).
 --
--- A 'HandleReader' buffers any input read past the end of one frame, so the
+-- A t'HandleReader' buffers any input read past the end of one frame, so the
 -- next read resumes from it.  Crucially, it reads from the handle /only/ while a
 -- frame is still incomplete: once a frame closes it returns immediately without
 -- touching the handle, so it never blocks waiting for input beyond the command

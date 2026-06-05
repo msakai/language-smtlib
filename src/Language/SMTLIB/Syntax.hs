@@ -1,7 +1,7 @@
 -- | The full SMT-LIB 2 abstract syntax tree.
 --
 -- Every node type takes a final annotation type parameter @a@; use @()@ for a
--- plain tree or 'SrcSpan' for one decorated with source positions.  This module
+-- plain tree or t'SrcSpan' for one decorated with source positions.  This module
 -- re-exports all of the individual @Language.SMTLIB.Syntax.*@ modules.
 module Language.SMTLIB.Syntax
   ( module Language.SMTLIB.Syntax.Annotation

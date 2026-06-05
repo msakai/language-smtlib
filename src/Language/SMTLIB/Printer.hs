@@ -2,7 +2,7 @@
 --
 -- The default layout puts each top-level form on a single line (no automatic
 -- line breaks), which keeps the output deterministic and trivially
--- round-trippable.  'RenderOptions' lets callers opt into a wrapped layout.
+-- round-trippable.  t'RenderOptions' lets callers opt into a wrapped layout.
 module Language.SMTLIB.Printer
   ( Pretty(..)
   , RenderOptions(..)

@@ -4,7 +4,7 @@
 --
 --   * Whole-text parsing ('parseScript', 'parseCommand', 'parseTerm') runs
 --     megaparsec over the entire input and yields its rich
---     'ParseErrorBundle' on failure.
+--     @ParseErrorBundle@ on failure.
 --
 --   * Incremental parsing ('frameCommand') runs the S-expression framer first,
 --     so it can distinguish \"needs more input\" ('Partial') from a real
@@ -104,6 +104,6 @@ parseTerm' fp = fmap noAnn . parseTerm fp
 --   * @'Done' ('Left' err) rest@ — a complete frame that failed to parse;
 --   * @'Partial' k@ — the input ends mid-command; feed more (a REPL would
 --     prompt for a continuation line);
---   * @'Failed' fe rest@ — a framing error (or 'EndOfInput' at a clean end).
+--   * @'Failed' fe rest@ — a framing error (or @EndOfInput@ at a clean end).
 frameCommand :: Text -> Result (Either MPError (Command SrcSpan))
 frameCommand = fmap (runParser (sc *> pCommand <* eof) "<input>") . frameSExpr

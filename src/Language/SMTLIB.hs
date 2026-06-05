@@ -16,6 +16,10 @@ module Language.SMTLIB
   , module Language.SMTLIB.Parser
   , module Language.SMTLIB.Parser.Response
   , module Language.SMTLIB.Printer
+    -- * Error rendering (re-exported from megaparsec)
+
+    -- | Render a megaparsec error bundle (as returned by 'parseScript' and
+    -- friends) into a human-readable, multi-line string.
   , errorBundlePretty
   ) where
 

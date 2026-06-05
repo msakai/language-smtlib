@@ -161,7 +161,7 @@ instance Pretty (FunctionDec a) where
   pretty (FunctionDec s vs srt _) =
     parens (prettySymbol s <+> parens (hsep (map pretty vs)) <+> pretty srt)
 
--- | A 'FunctionDef' renders /without/ surrounding parens, since the enclosing
+-- | A t'FunctionDef' renders /without/ surrounding parens, since the enclosing
 -- command supplies them.
 instance Pretty (FunctionDef a) where
   pretty (FunctionDef s vs srt t _) =

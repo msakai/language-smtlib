@@ -3,9 +3,9 @@
 -- identifiers, s-expressions and attributes.
 --
 -- Every node parser is wrapped with 'withSpan', so each AST node is annotated
--- with the 'SrcSpan' it was parsed from.  The annotation always occupies the
+-- with the t'SrcSpan' it was parsed from.  The annotation always occupies the
 -- last field of a constructor, which means a fully-applied-but-for-the-span
--- constructor has type @'SrcSpan' -> node 'SrcSpan'@ — exactly what 'withSpan'
+-- constructor has type @t'SrcSpan' -> node t'SrcSpan'@ — exactly what 'withSpan'
 -- consumes.
 module Language.SMTLIB.Parser.Internal
   ( P
@@ -67,7 +67,7 @@ lexeme :: P a -> P a
 lexeme = L.lexeme sc
 
 -- | Annotate a node with the source span it covers.  The supplied parser yields
--- a constructor still awaiting its final 'SrcSpan' field.
+-- a constructor still awaiting its final t'SrcSpan' field.
 withSpan :: P (SrcSpan -> a) -> P a
 withSpan p = do
   s <- getOffset
@@ -80,9 +80,11 @@ withSpan p = do
 tok :: Text -> P ()
 tok w = (lexeme . try) (string w *> notFollowedBy (satisfy isSimpleSymbolChar)) $> ()
 
+-- | An opening parenthesis (and trailing whitespace).
 openP :: P ()
 openP = lexeme (char '(') $> ()
 
+-- | A closing parenthesis (and trailing whitespace).
 closeP :: P ()
 closeP = lexeme (char ')') $> ()
 

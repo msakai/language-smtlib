@@ -68,6 +68,7 @@ pCheckSatResponse = choice
 pGetValueResponse :: P [ValuationPair SrcSpan]
 pGetValueResponse = parens (some pValuationPair)
 
+-- | A @(term value)@ pair.
 pValuationPair :: P (ValuationPair SrcSpan)
 pValuationPair = parens (ValuationPair <$> pTerm <*> pTerm)
 
@@ -75,6 +76,7 @@ pValuationPair = parens (ValuationPair <$> pTerm <*> pTerm)
 pGetModelResponse :: P [ModelResponse SrcSpan]
 pGetModelResponse = parens (optional (tok "model") *> many pModelResponse)
 
+-- | A single @model_response@ definition (@define-fun@\/@-rec@\/@-funs-rec@).
 pModelResponse :: P (ModelResponse SrcSpan)
 pModelResponse = parens $ choice
   [ tok "define-fun-rec"  *> (MRDefineFunRec <$> pFunctionDef)
@@ -103,6 +105,7 @@ pGetAssertionsResponse = parens (many pTerm)
 pGetInfoResponse :: P [InfoResponse SrcSpan]
 pGetInfoResponse = parens (some pInfoResponse)
 
+-- | A single @info_response@ entry.
 pInfoResponse :: P (InfoResponse SrcSpan)
 pInfoResponse = choice
   [ tok ":assertion-stack-levels" *> (IRAssertionStackLevels <$> numeral)
