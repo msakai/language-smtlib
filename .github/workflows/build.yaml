@@ -20,22 +20,22 @@ jobs:
           - ghc: '9.6.7'
             os: ubuntu-latest
             stack_yaml: 'stack-ghc-9.6.yaml'
-            stack_args: ''
+            stack_args: '--flag language-smtlib:conformance'
 
           - ghc: '9.8.4'
             os: ubuntu-latest
             stack_yaml: 'stack-ghc-9.8.yaml'
-            stack_args: ''
+            stack_args: '--flag language-smtlib:conformance'
 
           - ghc: '9.10.3'
             os: ubuntu-latest
             stack_yaml: 'stack-ghc-9.10.yaml'
-            stack_args: '--haddock --no-haddock-deps'
+            stack_args: '--flag language-smtlib:conformance --haddock --no-haddock-deps'
 
           - ghc: '9.12.4'
             os: ubuntu-latest
             stack_yaml: 'stack-ghc-9.12.yaml'
-            stack_args: ''
+            stack_args: '--flag language-smtlib:conformance'
 
     steps:
       - uses: actions/checkout@v4
