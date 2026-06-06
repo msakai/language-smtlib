@@ -1,0 +1,3 @@
+snapshot: nightly-2026-06-05  # GHC 9.12.4 (no LTS for 9.12 yet)
+packages:
+- .

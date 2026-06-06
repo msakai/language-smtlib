@@ -1,0 +1,72 @@
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+
+name: build
+jobs:
+  build:
+    name: build (GHC ${{ matrix.ghc }})
+    runs-on: ${{ matrix.os }}
+    env:
+      STACK_YAML: ${{ matrix.stack_yaml }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ghc: '9.6.7'
+            os: ubuntu-latest
+            stack_yaml: 'stack-ghc-9.6.yaml'
+            stack_args: ''
+
+          - ghc: '9.8.4'
+            os: ubuntu-latest
+            stack_yaml: 'stack-ghc-9.8.yaml'
+            stack_args: ''
+
+          - ghc: '9.10.3'
+            os: ubuntu-latest
+            stack_yaml: 'stack-ghc-9.10.yaml'
+            stack_args: '--haddock --no-haddock-deps'
+
+          - ghc: '9.12.4'
+            os: ubuntu-latest
+            stack_yaml: 'stack-ghc-9.12.yaml'
+            stack_args: ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: haskell-actions/setup@v2
+        id: setup-haskell
+        name: Setup Haskell
+        with:
+          ghc-version: ${{ matrix.ghc }}
+          enable-stack: true
+          stack-version: 'latest'
+          cabal-update: false
+
+      - name: Setup stack to use system GHC
+        run: stack config set system-ghc --global true
+
+      - uses: actions/cache@v4
+        name: Cache ~/.stack
+        with:
+          path: ${{ steps.setup-haskell.outputs.stack-root }}
+          key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('language-smtlib.cabal', matrix.stack_yaml) }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.ghc }}-
+
+      - name: Build dependencies
+        run: stack build --test --no-run-tests --only-dependencies ${{ matrix.stack_args }}
+
+      - name: Build
+        run: stack build --test --no-run-tests --ghc-options=-j ${{ matrix.stack_args }}
+
+      - name: Test
+        # -j1 is for https://github.com/commercialhaskell/stack/issues/5024
+        run: stack test ${{ matrix.stack_args }} -j1
+        timeout-minutes: 10
