@@ -19,6 +19,16 @@ category:            Language, SMT
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/msakai/language-smtlib#readme>
 
+flags:
+  conformance:
+    description: >-
+      Build language-smtlib-conformance, a driver that round-trips large
+      external SMT-LIB benchmark suites (e.g. the SMT-LIB / SMT-COMP
+      collections on Zenodo).  Off by default: it is not part of the normal
+      build, test suite or CI.
+    manual: true
+    default: false
+
 dependencies:
 - base >= 4.7 && < 5
 
@@ -63,6 +73,22 @@ executables:
     dependencies:
     - language-smtlib
     - text
+
+  language-smtlib-conformance:
+    main:                Main.hs
+    source-dirs:         conformance
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    when:
+    - condition: "!flag(conformance)"
+      buildable: false
+    dependencies:
+    - language-smtlib
+    - text
+    - directory
+    - filepath
 
 tests:
   language-smtlib-test:
