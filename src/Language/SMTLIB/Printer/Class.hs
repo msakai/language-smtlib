@@ -47,6 +47,14 @@ prettySymbol s
   | symbolNeedsQuoting s = text (T.concat ["|", s, "|"])
   | otherwise            = text s
 
+-- | Render a symbol that appears in a @match@ pattern binding position.  The
+-- @_@ wildcard (SMT-LIB 2.7) is printed bare; every other symbol follows the
+-- usual quoting rules (note @_@ is otherwise a reserved word).
+prettyPatternSymbol :: Symbol -> Doc ann
+prettyPatternSymbol s
+  | s == "_"  = text "_"
+  | otherwise = prettySymbol s
+
 -- | Render a keyword (stored without its colon) as @:keyword@.
 prettyKeyword :: Keyword -> Doc ann
 prettyKeyword k = text (T.cons ':' k)
@@ -118,8 +126,8 @@ instance Pretty (SortedVar a) where
 
 instance Pretty (Pattern a) where
   pretty = \case
-    PVar s _     -> prettySymbol s
-    PCtor c xs _ -> parens (hsep (prettySymbol c : map prettySymbol xs))
+    PVar s _     -> prettyPatternSymbol s
+    PCtor c xs _ -> parens (hsep (prettySymbol c : map prettyPatternSymbol xs))
 
 instance Pretty (MatchCase a) where
   pretty (MatchCase p t _) = parens (pretty p <+> pretty t)
@@ -131,6 +139,8 @@ instance Pretty (Term a) where
     TApp q args _  -> parens (hsep (pretty q : map pretty args))
     TLet bs t _    ->
       parens (text "let" <+> parens (hsep (map pretty bs)) <+> pretty t)
+    TLambda vs t _ ->
+      parens (text "lambda" <+> parens (hsep (map pretty vs)) <+> pretty t)
     TForall vs t _ ->
       parens (text "forall" <+> parens (hsep (map pretty vs)) <+> pretty t)
     TExists vs t _ ->
@@ -207,10 +217,13 @@ instance Pretty (Command a) where
     SetOption o _           -> parens (text "set-option" <+> pretty o)
     SetInfo attr _          -> parens (text "set-info" <+> pretty attr)
     DeclareSort s n _       -> parens (text "declare-sort" <+> prettySymbol s <+> int n)
+    DeclareSortParameter s _ -> parens (text "declare-sort-parameter" <+> prettySymbol s)
     DefineSort s args srt _ ->
       parens (text "define-sort" <+> prettySymbol s
               <+> parens (hsep (map prettySymbol args)) <+> pretty srt)
     DeclareConst s srt _    -> parens (text "declare-const" <+> prettySymbol s <+> pretty srt)
+    DefineConst s srt t _   ->
+      parens (text "define-const" <+> prettySymbol s <+> pretty srt <+> pretty t)
     DeclareFun s args ret _ ->
       parens (text "declare-fun" <+> prettySymbol s
               <+> parens (hsep (map pretty args)) <+> pretty ret)

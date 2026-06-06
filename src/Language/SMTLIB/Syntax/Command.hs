@@ -61,8 +61,10 @@ data Command a
   | SetOption        (Option a)                         a
   | SetInfo          (Attribute a)                      a
   | DeclareSort      !Symbol !Integer                   a
+  | DeclareSortParameter !Symbol                        a  -- ^ SMT-LIB 2.7
   | DefineSort       !Symbol [Symbol] (Sort a)          a
   | DeclareConst     !Symbol (Sort a)                   a
+  | DefineConst      !Symbol (Sort a) (Term a)          a  -- ^ SMT-LIB 2.7
   | DeclareFun       !Symbol [Sort a] (Sort a)          a
   | DefineFun        (FunctionDef a)                    a
   | DefineFunRec     (FunctionDef a)                    a
@@ -160,8 +162,10 @@ instance Annotated Command where
     SetOption _ a           -> a
     SetInfo _ a             -> a
     DeclareSort _ _ a       -> a
+    DeclareSortParameter _ a -> a
     DefineSort _ _ _ a      -> a
     DeclareConst _ _ a      -> a
+    DefineConst _ _ _ a     -> a
     DeclareFun _ _ _ a      -> a
     DefineFun _ a           -> a
     DefineFunRec _ a        -> a
@@ -191,8 +195,10 @@ instance Annotated Command where
     SetOption x _           -> SetOption x a
     SetInfo x _             -> SetInfo x a
     DeclareSort x y _       -> DeclareSort x y a
+    DeclareSortParameter x _ -> DeclareSortParameter x a
     DefineSort x y z _      -> DefineSort x y z a
     DeclareConst x y _      -> DeclareConst x y a
+    DefineConst x y z _     -> DefineConst x y z a
     DeclareFun x y z _      -> DeclareFun x y z a
     DefineFun x _           -> DefineFun x a
     DefineFunRec x _        -> DefineFunRec x a

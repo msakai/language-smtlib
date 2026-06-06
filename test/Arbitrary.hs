@@ -36,6 +36,11 @@ genSymbol = oneof [simple, weird]
       pure (T.pack (h : t))
     weird = T.pack <$> resize 4 (listOf1 (elements weirdChars))
 
+-- | A symbol usable in a @match@ pattern binding position: an ordinary symbol
+-- or the @_@ wildcard (SMT-LIB 2.7).
+genPatternSymbol :: Gen Symbol
+genPatternSymbol = frequency [(1, pure "_"), (4, genSymbol)]
+
 genKeyword :: Gen Keyword
 genKeyword = T.pack <$> resize 4 (listOf1 (elements contChars))
 
@@ -111,7 +116,7 @@ instance Arbitrary (SExpr ()) where
             , (\w -> SEReserved w ()) <$> elements reservedList
             , (\xs -> SEList xs ()) <$> listOf' 3 (resize (n `div` 2) (sized go))
             ]
-      reservedList = ["_", "as", "let", "forall", "exists", "match", "par", "!"]
+      reservedList = ["_", "as", "let", "lambda", "forall", "exists", "match", "par", "!"]
 
 instance Arbitrary (AttributeValue ()) where
   arbitrary = oneof
@@ -136,8 +141,8 @@ instance Arbitrary (SortedVar ()) where
 
 instance Arbitrary (Pattern ()) where
   arbitrary = oneof
-    [ (\s -> PVar s ()) <$> genSymbol
-    , (\c xs -> PCtor c xs ()) <$> genSymbol <*> listOf1' 2 genSymbol
+    [ (\s -> PVar s ()) <$> genPatternSymbol
+    , (\c xs -> PCtor c xs ()) <$> genSymbol <*> listOf1' 2 genPatternSymbol
     ]
 
 instance Arbitrary (MatchCase ()) where
@@ -156,6 +161,7 @@ instance Arbitrary (Term ()) where
             [ leaf
             , (\q ts -> TApp q ts ()) <$> arbitrary <*> listOf1' 3 (sub n)
             , (\bs t -> TLet bs t ()) <$> listOf1' 2 (resize (n `div` 2) arbitrary) <*> sub n
+            , (\vs t -> TLambda vs t ()) <$> listOf1' 2 (resize (n `div` 2) arbitrary) <*> sub n
             , (\vs t -> TForall vs t ()) <$> listOf1' 2 (resize (n `div` 2) arbitrary) <*> sub n
             , (\vs t -> TExists vs t ()) <$> listOf1' 2 (resize (n `div` 2) arbitrary) <*> sub n
             , (\t cs -> TMatch t cs ()) <$> sub n <*> listOf1' 2 (resize (n `div` 2) arbitrary)
@@ -222,8 +228,10 @@ instance Arbitrary (Command ()) where
     , (\o -> SetOption o ()) <$> arbitrary
     , (\a -> SetInfo a ()) <$> arbitrary
     , (\s k -> DeclareSort s k ()) <$> genSymbol <*> (getNonNegative <$> arbitrary)
+    , (\s -> DeclareSortParameter s ()) <$> genSymbol
     , (\s ps r -> DefineSort s ps r ()) <$> genSymbol <*> listOf' 2 genSymbol <*> arbitrary
     , (\s r -> DeclareConst s r ()) <$> genSymbol <*> arbitrary
+    , (\s r t -> DefineConst s r t ()) <$> genSymbol <*> arbitrary <*> resize 2 arbitrary
     , (\s as r -> DeclareFun s as r ()) <$> genSymbol <*> listOf' 2 arbitrary <*> arbitrary
     , (\d -> DefineFun d ()) <$> arbitrary
     , (\d -> DefineFunRec d ()) <$> arbitrary

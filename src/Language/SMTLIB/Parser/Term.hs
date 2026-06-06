@@ -15,10 +15,12 @@ module Language.SMTLIB.Parser.Term
   , pFunctionDef
   ) where
 
+import Data.Functor (($>))
 import Text.Megaparsec
 
 import Language.SMTLIB.Parser.Internal
 import Language.SMTLIB.Syntax.Annotation (SrcSpan)
+import Language.SMTLIB.Syntax.Constant (Symbol)
 import Language.SMTLIB.Syntax.Datatype
 import Language.SMTLIB.Syntax.Term
 
@@ -38,6 +40,7 @@ parenCompound = do
   _ <- openP
   r <- choice
     [ tok "let"    *> (TLet    <$> parens (some pVarBinding) <*> pTerm)
+    , tok "lambda" *> (TLambda <$> parens (some pSortedVar)  <*> pTerm)
     , tok "forall" *> (TForall <$> parens (some pSortedVar)  <*> pTerm)
     , tok "exists" *> (TExists <$> parens (some pSortedVar)  <*> pTerm)
     , tok "match"  *> (TMatch  <$> pTerm <*> parens (some pMatchCase))
@@ -55,12 +58,19 @@ pVarBinding = withSpan (parens (VarBinding <$> pSymbolRaw <*> pTerm))
 pSortedVar :: P (SortedVar SrcSpan)
 pSortedVar = withSpan (parens (SortedVar <$> pSymbolRaw <*> pSort))
 
--- | A @pattern@: a single symbol, or @(constructor x1 ... xn)@.
+-- | A @pattern@: a single symbol, or @(constructor x1 ... xn)@.  The bound
+-- variables (and a whole single-symbol pattern) may be the @_@ wildcard
+-- (SMT-LIB 2.7); the constructor symbol itself may not.
 pPattern :: P (Pattern SrcSpan)
 pPattern = withSpan (pvar <|> ctor)
   where
-    pvar = PVar <$> pSymbolRaw
-    ctor = parens (PCtor <$> pSymbolRaw <*> some pSymbolRaw)
+    pvar = PVar <$> pPatternSymbol
+    ctor = parens (PCtor <$> pSymbolRaw <*> some pPatternSymbol)
+
+-- | A symbol in a @match@ pattern binding position: an ordinary symbol or the
+-- @_@ wildcard.  @_@ is otherwise a reserved word, so 'pSymbolRaw' rejects it.
+pPatternSymbol :: P Symbol
+pPatternSymbol = pSymbolRaw <|> (tok "_" $> "_")
 
 -- | A @match_case@ @(pattern term)@.
 pMatchCase :: P (MatchCase SrcSpan)

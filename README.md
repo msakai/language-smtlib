@@ -7,8 +7,10 @@ streaming the [SMT-LIB 2](https://smt-lib.org/) format.
 
 ## Features
 
-- **Full SMT-LIB 2.6 grammar** — commands, terms, sorts, datatypes
-  (`declare-datatype(s)`, `match`, `par`), and solver command responses.
+- **Full SMT-LIB 2.7 grammar** — commands, terms, sorts, datatypes
+  (`declare-datatype(s)`, `match`, `par`), the 2.7 additions (`lambda`,
+  `declare-sort-parameter`, `define-const`, the `_` wildcard pattern), and
+  solver command responses.
 - **`Text`-based** throughout, with rich parse errors from
   [megaparsec](https://hackage.haskell.org/package/megaparsec).
 - **Optional source spans.** Every AST node carries a final annotation type
@@ -77,10 +79,13 @@ driver h = do
 
 ## Conformance notes
 
-- Targets SMT-LIB **2.6** as the baseline. The string-escape rules and
+- Targets SMT-LIB **2.7** as the baseline. The string-escape rules and
   reserved-word set are isolated in `Language.SMTLIB.Syntax.Constant` and
   `Language.SMTLIB.Internal.Lexical` for easy verification against the 2.7
-  reference.
+  reference. The `->` map sort parses as an ordinary sort application; the
+  higher-order apply operator `_` is parsed where it coincides with the
+  indexed-identifier syntax (`(_ f x)`), matching the 2.7 concrete grammar
+  (Appendix B), which adds no dedicated application production.
 - As a benign superset, Unicode letters are accepted in simple symbols (so
   identifiers like `あいうえお` need no quoting), and `(push)` / `(pop)` without
   a numeral are read as `(push 1)` / `(pop 1)`.
