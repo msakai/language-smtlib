@@ -1,4 +1,5 @@
--- | Terms and their binders, including the SMT-LIB 2.6 @match@ form.
+-- | Terms and their binders, including the SMT-LIB 2.6 @match@ form and the
+-- SMT-LIB 2.7 @lambda@ binder.
 module Language.SMTLIB.Syntax.Term
   ( Term(..)
   , VarBinding(..)
@@ -18,6 +19,7 @@ data Term a
   | TQualIdent (QualIdentifier a)            a
   | TApp       (QualIdentifier a) [Term a]   a  -- ^ function application; args non-empty
   | TLet       [VarBinding a] (Term a)       a
+  | TLambda    [SortedVar a]  (Term a)       a  -- ^ @(lambda ((x S) ...) t)@; SMT-LIB 2.7
   | TForall    [SortedVar a]  (Term a)       a
   | TExists    [SortedVar a]  (Term a)       a
   | TMatch     (Term a) [MatchCase a]        a
@@ -33,7 +35,9 @@ data SortedVar a = SortedVar !Symbol (Sort a) a
   deriving (Show, Eq, Functor, Foldable, Traversable)
 
 -- | A @pattern@ of a @match@ case: either a single variable\/nullary
--- constructor symbol, or @(constructor x1 ... xn)@.
+-- constructor symbol, or @(constructor x1 ... xn)@.  As of SMT-LIB 2.7 the
+-- special symbol @_@ may also be used as a wildcard, both as a whole pattern
+-- (@PVar \"_\"@) and as a bound variable inside a constructor pattern.
 data Pattern a
   = PVar  !Symbol           a
   | PCtor !Symbol [Symbol]  a
@@ -49,6 +53,7 @@ instance Annotated Term where
     TQualIdent _ a -> a
     TApp _ _ a     -> a
     TLet _ _ a     -> a
+    TLambda _ _ a  -> a
     TForall _ _ a  -> a
     TExists _ _ a  -> a
     TMatch _ _ a   -> a
@@ -58,6 +63,7 @@ instance Annotated Term where
     TQualIdent x _ -> TQualIdent x a
     TApp f x _     -> TApp f x a
     TLet b t _     -> TLet b t a
+    TLambda v t _  -> TLambda v t a
     TForall v t _  -> TForall v t a
     TExists v t _  -> TExists v t a
     TMatch t c _   -> TMatch t c a
