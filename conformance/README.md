@@ -53,11 +53,16 @@ scripts/run-conformance.sh benchmarks/
 
 ### Known Zenodo records
 
-| Collection                | Record id  | URL                                   |
-| ------------------------- | ---------- | ------------------------------------- |
-| non-incremental 2024      | `11061097` | <https://zenodo.org/records/11061097> |
-| non-incremental 2025      | `15493090` | <https://zenodo.org/records/15493090> |
-| incremental 2023          | `10607775` | <https://zenodo.org/records/10607775> |
+| Collection                         | Record id  | URL                                   |
+| ---------------------------------- | ---------- | ------------------------------------- |
+| non-incremental 2023               | `10607722` | <https://zenodo.org/records/10607722> |
+| non-incremental 2024               | `11061097` | <https://zenodo.org/records/11061097> |
+| non-incremental 2025 (2025.05.22)  | `15493090` | <https://zenodo.org/records/15493090> |
+| non-incremental 2025 (2025.08.04)  | `16740866` | <https://zenodo.org/records/16740866> |
+| incremental 2023                   | `10607775` | <https://zenodo.org/records/10607775> |
+| incremental 2024 (2024.04.23)      | `11061220` | <https://zenodo.org/records/11061220> |
+| incremental 2024 (2024.05.13)      | `11186591` | <https://zenodo.org/records/11186591> |
+| incremental 2025                   | `15493096` | <https://zenodo.org/records/15493096> |
 
 Pass any record id to `--record`; the script reads the actual file list from the
 Zenodo REST API, so newer releases work without code changes.
