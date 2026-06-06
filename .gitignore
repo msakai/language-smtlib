@@ -23,3 +23,7 @@ cabal.project.local~
 .ghc.environment.*
 *~
 stack-ghc-*.yaml.lock
+
+# Downloaded SMT-LIB / SMT-COMP benchmark data (see conformance/README.md).
+# Large external data; never committed.
+/benchmarks/

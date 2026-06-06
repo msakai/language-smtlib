@@ -99,3 +99,12 @@ driver h = do
 stack build
 stack test     # round-trip properties, framer units, and sample files
 ```
+
+### Testing against large external benchmarks
+
+To stress-test the parser and printer against the full SMT-LIB / SMT-COMP
+benchmark suites on [Zenodo](https://zenodo.org/), there is an optional
+`language-smtlib-conformance` driver, built only behind the `conformance` flag
+(so it is never part of the normal build, test suite, or CI) and run on
+benchmark data that is downloaded separately and never committed. See
+[`conformance/README.md`](conformance/README.md).
