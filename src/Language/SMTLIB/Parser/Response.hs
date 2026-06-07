@@ -93,7 +93,7 @@ pGetAssignmentResponse = parens (many (parens ((,) <$> pSymbolRaw <*> pBool)))
 pGetUnsatCoreResponse :: P [Symbol]
 pGetUnsatCoreResponse = parens (many pSymbolRaw)
 
--- | @( term* )@ (prop-literals, modelled leniently as terms).
+-- | @( term* )@ (SMT-LIB 2.7 generalised assumptions: arbitrary Bool terms).
 pGetUnsatAssumptionsResponse :: P [Term SrcSpan]
 pGetUnsatAssumptionsResponse = parens (many pTerm)
 

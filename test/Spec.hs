@@ -65,7 +65,6 @@ roundTripTests = testGroup "round-trip (parse . render == id)"
   , testProperty "FunctionDef"    (roundTrip pFunctionDef    :: FunctionDef () -> Property)
   , testProperty "Option"         (roundTrip pOption         :: Option () -> Property)
   , testProperty "InfoFlag"       (roundTrip pInfoFlag       :: InfoFlag () -> Property)
-  , testProperty "PropLiteral"    (roundTrip pPropLiteral    :: PropLiteral () -> Property)
   , testProperty "Command"        (roundTrip pCommand        :: Command () -> Property)
   ]
 

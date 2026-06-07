@@ -1,10 +1,9 @@
--- | Parsers for commands, options, info flags and prop-literals.
+-- | Parsers for commands, options and info flags.
 module Language.SMTLIB.Parser.Command
   ( pCommand
   , pScript
   , pOption
   , pInfoFlag
-  , pPropLiteral
   ) where
 
 import Data.Functor (($>))
@@ -53,7 +52,7 @@ pCommand = withSpan $ do
     "reset-assertions"        -> pure ResetAssertions
     "reset"                   -> pure Reset
     "assert"                  -> Assert <$> pTerm
-    "check-sat-assuming"      -> CheckSatAssuming <$> parens (many pPropLiteral)
+    "check-sat-assuming"      -> CheckSatAssuming <$> parens (many pTerm)
     "check-sat"               -> pure CheckSat
     "get-assertions"          -> pure GetAssertions
     "get-assignment"          -> pure GetAssignment
@@ -102,10 +101,3 @@ pInfoFlag = withSpan $ choice
   , tok ":version"                $> InfoVersion
   , InfoFlagKeyword <$> pKeyword
   ]
-
--- | A @prop_literal@: a symbol or @(not symbol)@.
-pPropLiteral :: P (PropLiteral SrcSpan)
-pPropLiteral = withSpan (pos <|> neg)
-  where
-    pos = PosLiteral <$> pSymbolRaw
-    neg = parens (tok "not" *> (NegLiteral <$> pSymbolRaw))
