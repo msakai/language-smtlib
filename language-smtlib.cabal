@@ -103,6 +103,7 @@ library
       PatternSynonyms
       TupleSections
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  ghc-prof-options: -fprof-auto
   build-depends:
       base >=4.7 && <5
     , containers
@@ -130,6 +131,7 @@ executable language-smtlib-conformance
       PatternSynonyms
       TupleSections
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  ghc-prof-options: -fprof-auto
   build-depends:
       base >=4.7 && <5
     , directory
@@ -157,6 +159,7 @@ executable language-smtlib-exe
       PatternSynonyms
       TupleSections
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  ghc-prof-options: -fprof-auto
   build-depends:
       base >=4.7 && <5
     , language-smtlib

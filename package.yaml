@@ -61,6 +61,8 @@ library:
   - prettyprinter >= 1.7
   - scientific
   - text
+  ghc-prof-options:
+  - -fprof-auto
 
 executables:
   language-smtlib-exe:
@@ -70,6 +72,8 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    ghc-prof-options:
+    - -fprof-auto
     dependencies:
     - language-smtlib
     - text
@@ -81,6 +85,8 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    ghc-prof-options:
+    - -fprof-auto
     when:
     - condition: "!flag(conformance)"
       buildable: false

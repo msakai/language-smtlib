@@ -8,6 +8,7 @@ module Language.SMTLIB.Parser.Command
   ) where
 
 import Data.Functor (($>))
+import qualified Data.Text as T
 import Text.Megaparsec
 
 import Language.SMTLIB.Parser.Internal
@@ -21,45 +22,51 @@ pScript :: P (Script SrcSpan)
 pScript = many pCommand
 
 -- | A top-level @command@.
+--
+-- The command keyword is read once as a single word and then dispatched on,
+-- rather than attempting each alternative in turn.  This avoids re-scanning the
+-- keyword (and the backtracking that goes with it) for every command — a large
+-- saving on scripts dominated by a few command shapes (e.g. @assert@).
 pCommand :: P (Command SrcSpan)
 pCommand = withSpan $ do
   _ <- openP
-  c <- choice
-    [ tok "set-logic"          *> (SetLogic <$> pSymbolRaw)
-    , tok "set-option"         *> (SetOption <$> pOption)
-    , tok "set-info"           *> (SetInfo <$> pAttribute)
-    , tok "declare-sort-parameter" *> (DeclareSortParameter <$> pSymbolRaw)
-    , tok "declare-sort"       *> (DeclareSort <$> pSymbolRaw <*> numeral)
-    , tok "declare-const"      *> (DeclareConst <$> pSymbolRaw <*> pSort)
-    , tok "define-const"       *> (DefineConst <$> pSymbolRaw <*> pSort <*> pTerm)
-    , tok "declare-datatypes"  *> (DeclareDatatypes <$> parens (some pSortDec)
-                                                    <*> parens (some pDatatypeDec))
-    , tok "declare-datatype"   *> (DeclareDatatype <$> pSymbolRaw <*> pDatatypeDec)
-    , tok "declare-fun"        *> (DeclareFun <$> pSymbolRaw <*> parens (many pSort) <*> pSort)
-    , tok "define-sort"        *> (DefineSort <$> pSymbolRaw <*> parens (many pSymbolRaw) <*> pSort)
-    , tok "define-fun-rec"     *> (DefineFunRec <$> pFunctionDef)
-    , tok "define-funs-rec"    *> (DefineFunsRec <$> parens (some pFunctionDec)
-                                                <*> parens (some pTerm))
-    , tok "define-fun"         *> (DefineFun <$> pFunctionDef)
-    , tok "push"               *> (Push <$> (numeral <|> pure 1))
-    , tok "pop"                *> (Pop <$> (numeral <|> pure 1))
-    , tok "reset-assertions"   $> ResetAssertions
-    , tok "reset"              $> Reset
-    , tok "assert"             *> (Assert <$> pTerm)
-    , tok "check-sat-assuming" *> (CheckSatAssuming <$> parens (many pPropLiteral))
-    , tok "check-sat"          $> CheckSat
-    , tok "get-assertions"     $> GetAssertions
-    , tok "get-assignment"     $> GetAssignment
-    , tok "get-info"           *> (GetInfo <$> pInfoFlag)
-    , tok "get-model"          $> GetModel
-    , tok "get-option"         *> (GetOption <$> pKeyword)
-    , tok "get-proof"          $> GetProof
-    , tok "get-unsat-assumptions" $> GetUnsatAssumptions
-    , tok "get-unsat-core"     $> GetUnsatCore
-    , tok "get-value"          *> (GetValue <$> parens (some pTerm))
-    , tok "echo"               *> (Echo <$> pStringLit)
-    , tok "exit"               $> Exit
-    ]
+  kw <- pAnyWord
+  c <- case kw of
+    "set-logic"               -> SetLogic <$> pSymbolRaw
+    "set-option"              -> SetOption <$> pOption
+    "set-info"                -> SetInfo <$> pAttribute
+    "declare-sort-parameter"  -> DeclareSortParameter <$> pSymbolRaw
+    "declare-sort"            -> DeclareSort <$> pSymbolRaw <*> numeral
+    "declare-const"           -> DeclareConst <$> pSymbolRaw <*> pSort
+    "define-const"            -> DefineConst <$> pSymbolRaw <*> pSort <*> pTerm
+    "declare-datatypes"       -> DeclareDatatypes <$> parens (some pSortDec)
+                                                  <*> parens (some pDatatypeDec)
+    "declare-datatype"        -> DeclareDatatype <$> pSymbolRaw <*> pDatatypeDec
+    "declare-fun"             -> DeclareFun <$> pSymbolRaw <*> parens (many pSort) <*> pSort
+    "define-sort"             -> DefineSort <$> pSymbolRaw <*> parens (many pSymbolRaw) <*> pSort
+    "define-fun-rec"          -> DefineFunRec <$> pFunctionDef
+    "define-funs-rec"         -> DefineFunsRec <$> parens (some pFunctionDec)
+                                              <*> parens (some pTerm)
+    "define-fun"              -> DefineFun <$> pFunctionDef
+    "push"                    -> Push <$> (numeral <|> pure 1)
+    "pop"                     -> Pop <$> (numeral <|> pure 1)
+    "reset-assertions"        -> pure ResetAssertions
+    "reset"                   -> pure Reset
+    "assert"                  -> Assert <$> pTerm
+    "check-sat-assuming"      -> CheckSatAssuming <$> parens (many pPropLiteral)
+    "check-sat"               -> pure CheckSat
+    "get-assertions"          -> pure GetAssertions
+    "get-assignment"          -> pure GetAssignment
+    "get-info"                -> GetInfo <$> pInfoFlag
+    "get-model"               -> pure GetModel
+    "get-option"              -> GetOption <$> pKeyword
+    "get-proof"               -> pure GetProof
+    "get-unsat-assumptions"   -> pure GetUnsatAssumptions
+    "get-unsat-core"          -> pure GetUnsatCore
+    "get-value"               -> GetValue <$> parens (some pTerm)
+    "echo"                    -> Echo <$> pStringLit
+    "exit"                    -> pure Exit
+    _                         -> fail ("unknown command: " ++ T.unpack kw)
   _ <- closeP
   pure c
 
