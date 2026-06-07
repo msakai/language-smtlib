@@ -15,6 +15,7 @@ module Language.SMTLIB.Parser.Term
   , pFunctionDef
   ) where
 
+import Data.Char (isDigit)
 import Data.Functor (($>))
 import Text.Megaparsec
 
@@ -25,30 +26,44 @@ import Language.SMTLIB.Syntax.Datatype
 import Language.SMTLIB.Syntax.Term
 
 -- | A @term@.
+--
+-- The first character selects the form directly instead of attempting and
+-- rolling back alternatives: a non-paren term is a spec-constant (digit, @#@ or
+-- @\"@) or a bare symbol; a paren term is dispatched by 'parenCompound'.
 pTerm :: P (Term SrcSpan)
-pTerm = withSpan $ choice
-  [ TConstant  <$> pSpecConstant
-  , try (TQualIdent <$> pQualIdentifier)   -- symbol, (_ ..) or (as ..) used directly
-  , parenCompound
-  ]
+pTerm = withSpan $ do
+  c <- lookAhead anySingle
+  case c of
+    '(' -> parenCompound
+    _ | isConstStart c -> TConstant  <$> pSpecConstant
+      | otherwise      -> TQualIdent <$> pQualIdentifier
+  where
+    isConstStart x = isDigit x || x == '#' || x == '"'
 
--- | A parenthesised compound term: a binder, @match@, @!@, or an application.
--- The opening paren is consumed here; the leading 'try' in 'pTerm' has already
--- ruled out a bare qualified identifier.
+-- | A parenthesised compound term: a binder
+-- (@let@\/@lambda@\/@forall@\/@exists@), @match@, @!@, a qualified identifier
+-- used directly (@(as ...)@ or @(_ ...)@), or an application.
+--
+-- The head word immediately after the @(@ is peeked (without committing) to
+-- choose the form, so no alternative has to be parsed and rolled back.  The
+-- @(as ...)@ \/ @(_ ...)@ cases delegate to 'pQualIdentifier', which consumes
+-- the paren itself; the other cases consume it here.
 parenCompound :: P (SrcSpan -> Term SrcSpan)
 parenCompound = do
-  _ <- openP
-  r <- choice
-    [ tok "let"    *> (TLet    <$> parens (some pVarBinding) <*> pTerm)
-    , tok "lambda" *> (TLambda <$> parens (some pSortedVar)  <*> pTerm)
-    , tok "forall" *> (TForall <$> parens (some pSortedVar)  <*> pTerm)
-    , tok "exists" *> (TExists <$> parens (some pSortedVar)  <*> pTerm)
-    , tok "match"  *> (TMatch  <$> pTerm <*> parens (some pMatchCase))
-    , tok "!"      *> (TAnnot  <$> pTerm <*> some pAttribute)
-    , TApp <$> pQualIdentifier <*> some pTerm
-    ]
-  _ <- closeP
-  pure r
+  mw <- lookAhead (openP *> optional pAnyWord)
+  case mw of
+    Just "let"    -> binder (TLet    <$> parens (some pVarBinding) <*> pTerm)
+    Just "lambda" -> binder (TLambda <$> parens (some pSortedVar)  <*> pTerm)
+    Just "forall" -> binder (TForall <$> parens (some pSortedVar)  <*> pTerm)
+    Just "exists" -> binder (TExists <$> parens (some pSortedVar)  <*> pTerm)
+    Just "match"  -> binder (TMatch  <$> pTerm <*> parens (some pMatchCase))
+    Just "!"      -> binder (TAnnot  <$> pTerm <*> some pAttribute)
+    Just "as"     -> TQualIdent <$> pQualIdentifier
+    Just "_"      -> TQualIdent <$> pQualIdentifier
+    _             -> openP *> (TApp <$> pQualIdentifier <*> some pTerm) <* closeP
+  where
+    -- consume @(@ and the (already-peeked) head keyword, then the body
+    binder body = openP *> pAnyWord *> body <* closeP
 
 -- | A @var_binding@ @(symbol term)@.
 pVarBinding :: P (VarBinding SrcSpan)
