@@ -50,6 +50,7 @@ extra-source-files:
     test/samples/smt/reset-assertions.smt2
     test/samples/smt/reset.smt2
     test/samples/smt/set-info-status.smt2
+    test/samples/smt/smtlib-2.7-check-sat-assuming-terms.smt2
     test/samples/smt/smtlib-2.7-declare-sort-parameter.smt2
     test/samples/smt/smtlib-2.7-lambda-define-const.smt2
     test/samples/smt/swap.smt2

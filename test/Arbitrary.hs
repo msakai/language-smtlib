@@ -195,12 +195,6 @@ instance Arbitrary (FunctionDef ()) where
 
 -- Commands -------------------------------------------------------------------
 
-instance Arbitrary (PropLiteral ()) where
-  arbitrary = oneof
-    [ (\s -> PosLiteral s ()) <$> genSymbol
-    , (\s -> NegLiteral s ()) <$> genSymbol
-    ]
-
 instance Arbitrary (Option ()) where
   arbitrary = oneof
     [ b PrintSuccess, b GlobalDeclarations, b InteractiveMode

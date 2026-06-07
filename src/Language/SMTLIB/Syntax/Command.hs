@@ -3,7 +3,6 @@ module Language.SMTLIB.Syntax.Command
   ( Command(..)
   , Option(..)
   , InfoFlag(..)
-  , PropLiteral(..)
   , Script
   ) where
 
@@ -16,13 +15,6 @@ import Language.SMTLIB.Syntax.Datatype
   (DatatypeDec, FunctionDec, FunctionDef, SortDec)
 import Language.SMTLIB.Syntax.Identifier (Sort)
 import Language.SMTLIB.Syntax.Term (Term)
-
--- | A @prop_literal@: a symbol or its negation, as used by
--- @check-sat-assuming@.
-data PropLiteral a
-  = PosLiteral !Symbol a
-  | NegLiteral !Symbol a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
 
 -- | An @option@ for @set-option@.
 data Option a
@@ -77,7 +69,7 @@ data Command a
   | ResetAssertions  a
   | Assert           (Term a)                           a
   | CheckSat         a
-  | CheckSatAssuming [PropLiteral a]                    a
+  | CheckSatAssuming [Term a]                           a  -- ^ assumptions: arbitrary Bool terms (SMT-LIB 2.7; was @prop_literal@)
   | GetAssertions    a
   | GetModel         a
   | GetProof         a
@@ -93,14 +85,6 @@ data Command a
 
 -- | A script is a sequence of commands.
 type Script a = [Command a]
-
-instance Annotated PropLiteral where
-  ann = \case
-    PosLiteral _ a -> a
-    NegLiteral _ a -> a
-  setAnn a = \case
-    PosLiteral s _ -> PosLiteral s a
-    NegLiteral s _ -> NegLiteral s a
 
 instance Annotated Option where
   ann = \case

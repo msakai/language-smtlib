@@ -177,11 +177,6 @@ instance Pretty (FunctionDef a) where
   pretty (FunctionDef s vs srt t _) =
     prettySymbol s <+> parens (hsep (map pretty vs)) <+> pretty srt <+> pretty t
 
-instance Pretty (PropLiteral a) where
-  pretty = \case
-    PosLiteral s _ -> prettySymbol s
-    NegLiteral s _ -> parens (text "not" <+> prettySymbol s)
-
 instance Pretty (Option a) where
   pretty = \case
     DiagnosticOutputChannel s _   -> text ":diagnostic-output-channel" <+> prettyStringLit s
@@ -244,7 +239,7 @@ instance Pretty (Command a) where
     ResetAssertions _       -> parens (text "reset-assertions")
     Assert t _              -> parens (text "assert" <+> pretty t)
     CheckSat _              -> parens (text "check-sat")
-    CheckSatAssuming ps _   -> parens (text "check-sat-assuming" <+> parens (hsep (map pretty ps)))
+    CheckSatAssuming ts _   -> parens (text "check-sat-assuming" <+> parens (hsep (map pretty ts)))
     GetAssertions _         -> parens (text "get-assertions")
     GetModel _              -> parens (text "get-model")
     GetProof _              -> parens (text "get-proof")
