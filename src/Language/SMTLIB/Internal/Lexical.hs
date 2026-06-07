@@ -45,18 +45,31 @@ reservedWords = Set.fromList $
   , "set-info", "set-logic", "set-option"
   ]
 
--- | The non-alphanumeric characters permitted in a simple symbol.
-specialChars :: String
-specialChars = "~!@$%^&*_-+=<>.?/"
+-- | Whether @c@ is one of the non-alphanumeric characters permitted in a simple
+-- symbol (the set @~ ! \@ $ % ^ & * _ - + = < > . ? \/@).
+isSpecialChar :: Char -> Bool
+isSpecialChar = \case
+  '~' -> True; '!' -> True; '@' -> True; '$' -> True
+  '%' -> True; '^' -> True; '&' -> True; '*' -> True
+  '_' -> True; '-' -> True; '+' -> True; '=' -> True
+  '<' -> True; '>' -> True; '.' -> True; '?' -> True
+  '/' -> True; _   -> False
 
 -- | Whether @c@ may appear anywhere in a simple symbol.
 --
 -- The SMT-LIB 2 standard restricts simple-symbol letters to ASCII; as a
 -- documented, benign superset (matching what solvers such as z3 accept) we also
 -- admit any Unicode letter, so identifiers like @あいうえお@ need no quoting.
+--
+-- The ASCII cases are tested first by direct comparison (the overwhelmingly
+-- common path); 'isAlpha' is consulted only for non-ASCII code points.
 isSimpleSymbolChar :: Char -> Bool
 isSimpleSymbolChar c =
-  isAlpha c || isDigit c || c `elem` specialChars
+  (c >= 'a' && c <= 'z')
+    || (c >= 'A' && c <= 'Z')
+    || (c >= '0' && c <= '9')
+    || isSpecialChar c
+    || (c > '\127' && isAlpha c)
 
 -- | Whether @c@ may appear as the /first/ character of a simple symbol (i.e. a
 -- simple-symbol character that is not a digit).

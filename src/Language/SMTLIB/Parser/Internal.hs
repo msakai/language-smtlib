@@ -23,6 +23,7 @@ module Language.SMTLIB.Parser.Internal
     -- * Lexical tokens
   , pSpecConstant
   , pSymbolRaw
+  , pAnyWord
   , pKeyword
     -- * Shared grammar
   , pIndex
@@ -39,6 +40,7 @@ import Data.Functor (($>))
 import qualified Data.Set as Set
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.Read as TR
 import Data.Void (Void)
 import Text.Megaparsec
 import Text.Megaparsec.Char (char, string)
@@ -96,8 +98,14 @@ parens p = openP *> p <* closeP
 numeral :: P Integer
 numeral = lexeme (readInteger <$> takeWhile1P (Just "digit") isDigit)
 
+-- | Parse a non-empty run of decimal digits to an 'Integer', reading directly
+-- from the 'Text' (no intermediate 'String').  Only ever called on input that
+-- the caller has already constrained to one or more digits, so the error case
+-- is unreachable.
 readInteger :: Text -> Integer
-readInteger = read . T.unpack
+readInteger t = case TR.decimal t of
+  Right (n, _) -> n
+  Left e       -> error ("readInteger: " ++ e ++ ": " ++ T.unpack t)
 
 -- | @true@ \/ @false@.
 pBool :: P Bool
