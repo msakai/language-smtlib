@@ -1,6 +1,7 @@
 # language-smtlib
 
 [![build](https://github.com/msakai/language-smtlib/actions/workflows/build.yaml/badge.svg)](https://github.com/msakai/language-smtlib/actions/workflows/build.yaml)
+[![Hackage](https://img.shields.io/hackage/v/language-smtlib.svg)](https://hackage.haskell.org/package/language-smtlib)
 
 A robust, `Text`-based Haskell library for reading, writing and incrementally
 streaming the [SMT-LIB 2](https://smt-lib.org/) format.
