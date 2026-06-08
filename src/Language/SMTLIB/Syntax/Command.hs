@@ -6,7 +6,9 @@ module Language.SMTLIB.Syntax.Command
   , Script
   ) where
 
+import Data.Hashable (Hashable)
 import Data.Text (Text)
+import GHC.Generics (Generic)
 
 import Language.SMTLIB.Syntax.Annotation (Annotated(..))
 import Language.SMTLIB.Syntax.Attribute (Attribute)
@@ -33,7 +35,7 @@ data Option a
   | ReproducibleResourceLimit  !Integer       a
   | Verbosity                  !Integer       a
   | OptionAttribute            (Attribute a)  a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | An @info_flag@ for @get-info@.
 data InfoFlag a
@@ -45,7 +47,7 @@ data InfoFlag a
   | ReasonUnknownFlag   a
   | InfoVersion         a
   | InfoFlagKeyword !Keyword a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A top-level @command@.
 data Command a
@@ -81,10 +83,14 @@ data Command a
   | GetInfo          (InfoFlag a)                       a
   | Echo             !Text                              a
   | Exit             a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A script is a sequence of commands.
 type Script a = [Command a]
+
+instance Hashable a => Hashable (Option a)
+instance Hashable a => Hashable (InfoFlag a)
+instance Hashable a => Hashable (Command a)
 
 instance Annotated Option where
   ann = \case

@@ -8,6 +8,12 @@ and this project adheres to the
 
 ## Unreleased
 
+- Derive `Ord`, `Generic` and `Hashable` for every AST type (and `SrcSpan`),
+  so syntax trees can be used as `Data.Map`/`Data.HashMap` keys.  These
+  comparisons and hashes are structural and follow the existing `Eq`
+  (numeric literals compare by raw lexeme; annotations participate, so erase
+  them with `noAnn` for annotation-insensitive keys).
+
 ## 0.1.0.0 - 2026-06-08
 
 - Initial release of the `Text`-based SMT-LIB 2 library.

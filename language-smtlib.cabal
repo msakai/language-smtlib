@@ -114,6 +114,7 @@ library
   default-extensions:
       DeriveFoldable
       DeriveFunctor
+      DeriveGeneric
       DeriveTraversable
       LambdaCase
       OverloadedStrings
@@ -123,6 +124,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers >=0.6 && <0.8
+    , hashable >=1.3 && <1.6
     , megaparsec >=9.0 && <10
     , parser-combinators >=1.0 && <1.4
     , prettyprinter ==1.7.*
@@ -143,6 +145,7 @@ executable language-smtlib-conformance
   default-extensions:
       DeriveFoldable
       DeriveFunctor
+      DeriveGeneric
       DeriveTraversable
       LambdaCase
       OverloadedStrings
@@ -172,6 +175,7 @@ executable language-smtlib-exe
   default-extensions:
       DeriveFoldable
       DeriveFunctor
+      DeriveGeneric
       DeriveTraversable
       LambdaCase
       OverloadedStrings
@@ -199,6 +203,7 @@ test-suite language-smtlib-test
   default-extensions:
       DeriveFoldable
       DeriveFunctor
+      DeriveGeneric
       DeriveTraversable
       LambdaCase
       OverloadedStrings
@@ -208,8 +213,10 @@ test-suite language-smtlib-test
   build-depends:
       QuickCheck
     , base >=4.7 && <5
+    , containers
     , directory
     , filepath
+    , hashable
     , language-smtlib
     , megaparsec
     , quickcheck-instances
@@ -217,4 +224,5 @@ test-suite language-smtlib-test
     , tasty-hunit
     , tasty-quickcheck
     , text
+    , unordered-containers
   default-language: Haskell2010

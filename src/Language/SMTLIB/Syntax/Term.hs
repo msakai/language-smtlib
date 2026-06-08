@@ -8,6 +8,9 @@ module Language.SMTLIB.Syntax.Term
   , MatchCase(..)
   ) where
 
+import Data.Hashable (Hashable)
+import GHC.Generics (Generic)
+
 import Language.SMTLIB.Syntax.Annotation (Annotated(..))
 import Language.SMTLIB.Syntax.Attribute (Attribute)
 import Language.SMTLIB.Syntax.Constant (SpecConstant, Symbol)
@@ -24,15 +27,15 @@ data Term a
   | TExists    [SortedVar a]  (Term a)       a
   | TMatch     (Term a) [MatchCase a]        a
   | TAnnot     (Term a) [Attribute a]        a  -- ^ @(! term attr ...)@; attrs non-empty
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @var_binding@ @(symbol term)@ of a @let@.
 data VarBinding a = VarBinding !Symbol (Term a) a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @sorted_var@ @(symbol sort)@.
 data SortedVar a = SortedVar !Symbol (Sort a) a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @pattern@ of a @match@ case: either a single variable\/nullary
 -- constructor symbol, or @(constructor x1 ... xn)@.  As of SMT-LIB 2.7 the
@@ -41,11 +44,17 @@ data SortedVar a = SortedVar !Symbol (Sort a) a
 data Pattern a
   = PVar  !Symbol           a
   | PCtor !Symbol [Symbol]  a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @match_case@ @(pattern term)@.
 data MatchCase a = MatchCase (Pattern a) (Term a) a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
+
+instance Hashable a => Hashable (Term a)
+instance Hashable a => Hashable (VarBinding a)
+instance Hashable a => Hashable (SortedVar a)
+instance Hashable a => Hashable (Pattern a)
+instance Hashable a => Hashable (MatchCase a)
 
 instance Annotated Term where
   ann = \case

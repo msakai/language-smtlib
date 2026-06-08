@@ -19,9 +19,11 @@ module Language.SMTLIB.Syntax.Constant
   ) where
 
 import Data.Char (digitToInt)
+import Data.Hashable (Hashable)
 import Data.Scientific (Scientific)
 import Data.Text (Text)
 import qualified Data.Text as T
+import GHC.Generics (Generic)
 
 import Language.SMTLIB.Syntax.Annotation (Annotated(..))
 
@@ -38,13 +40,16 @@ data SpecConstant a
   | SCHexadecimal !Text    a  -- ^ digits only (no @#x@), e.g. @"00aF"@
   | SCBinary      !Text    a  -- ^ digits only (no @#b@), e.g. @"0110"@
   | SCString      !Text    a  -- ^ decoded string value (no quotes, @""@ unescaped)
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | An @index@ of an indexed identifier @(_ sym i ...)@.
 data Index a
   = IxNumeral !Integer a
   | IxSymbol  !Symbol  a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
+
+instance Hashable a => Hashable (SpecConstant a)
+instance Hashable a => Hashable (Index a)
 
 instance Annotated SpecConstant where
   ann = \case

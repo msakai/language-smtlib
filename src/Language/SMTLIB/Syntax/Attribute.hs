@@ -6,6 +6,9 @@ module Language.SMTLIB.Syntax.Attribute
   , Attribute(..)
   ) where
 
+import Data.Hashable (Hashable)
+import GHC.Generics (Generic)
+
 import Language.SMTLIB.Syntax.Annotation (Annotated(..))
 import Language.SMTLIB.Syntax.Constant (Keyword, SpecConstant, Symbol)
 
@@ -16,20 +19,24 @@ data SExpr a
   | SEKeyword  !Keyword         a
   | SEReserved !Symbol          a  -- ^ a reserved word appearing in an s-expr (e.g. @_@, @as@)
   | SEList     [SExpr a]        a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | An @attribute_value@.
 data AttributeValue a
   = AVConstant (SpecConstant a) a
   | AVSymbol   !Symbol          a
   | AVSExpr    [SExpr a]        a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | An @attribute@: a keyword, optionally carrying a value.
 data Attribute a
   = Attribute     !Keyword                    a
   | AttributeWith !Keyword (AttributeValue a) a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
+
+instance Hashable a => Hashable (SExpr a)
+instance Hashable a => Hashable (AttributeValue a)
+instance Hashable a => Hashable (Attribute a)
 
 instance Annotated SExpr where
   ann = \case

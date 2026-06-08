@@ -6,13 +6,16 @@ module Language.SMTLIB.Syntax.Identifier
   , pattern Symbol
   ) where
 
+import Data.Hashable (Hashable)
+import GHC.Generics (Generic)
+
 import Language.SMTLIB.Syntax.Annotation (Annotated(..))
 import Language.SMTLIB.Syntax.Constant (Index, Symbol)
 
 -- | An @identifier@: a symbol optionally followed by a non-empty list of
 -- indices, in which case it prints as @(_ sym i ...)@.
 data Identifier a = Identifier !Symbol [Index a] a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A simple (non-indexed) identifier.
 pattern Symbol :: Symbol -> Identifier ()
@@ -20,14 +23,18 @@ pattern Symbol s = Identifier s [] ()
 
 -- | A @sort@: an identifier applied to zero or more argument sorts.
 data Sort a = Sort (Identifier a) [Sort a] a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @qual_identifier@: an identifier, optionally annotated with a result sort
 -- via @(as id sort)@.
 data QualIdentifier a
   = QIdentifier   (Identifier a)          a
   | QIdentifierAs (Identifier a) (Sort a) a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
+
+instance Hashable a => Hashable (Identifier a)
+instance Hashable a => Hashable (Sort a)
+instance Hashable a => Hashable (QualIdentifier a)
 
 instance Annotated Identifier where
   ann (Identifier _ _ a) = a

@@ -8,6 +8,9 @@ module Language.SMTLIB.Syntax.Datatype
   , FunctionDef(..)
   ) where
 
+import Data.Hashable (Hashable)
+import GHC.Generics (Generic)
+
 import Language.SMTLIB.Syntax.Annotation (Annotated(..))
 import Language.SMTLIB.Syntax.Constant (Symbol)
 import Language.SMTLIB.Syntax.Identifier (Sort)
@@ -15,30 +18,37 @@ import Language.SMTLIB.Syntax.Term (SortedVar, Term)
 
 -- | A @sort_dec@ @(symbol numeral)@ heading a @declare-datatypes@.
 data SortDec a = SortDec !Symbol !Integer a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @selector_dec@ @(symbol sort)@.
 data SelectorDec a = SelectorDec !Symbol (Sort a) a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @constructor_dec@ @(symbol selector_dec*)@.
 data ConstructorDec a = ConstructorDec !Symbol [SelectorDec a] a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @datatype_dec@.  The first field holds the @par@ type variables; it is
 -- empty for a non-parametric @(constructor_dec+)@ declaration and non-empty for
 -- a @(par (u+) (constructor_dec+))@ declaration.
 data DatatypeDec a = DatatypeDec [Symbol] [ConstructorDec a] a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @function_dec@ @(symbol (sorted_var*) sort)@, used by @define-funs-rec@.
 data FunctionDec a = FunctionDec !Symbol [SortedVar a] (Sort a) a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A @function_def@ @symbol (sorted_var*) sort term@, used by @define-fun@ and
 -- @define-fun-rec@.
 data FunctionDef a = FunctionDef !Symbol [SortedVar a] (Sort a) (Term a) a
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
+
+instance Hashable a => Hashable (SortDec a)
+instance Hashable a => Hashable (SelectorDec a)
+instance Hashable a => Hashable (ConstructorDec a)
+instance Hashable a => Hashable (DatatypeDec a)
+instance Hashable a => Hashable (FunctionDec a)
+instance Hashable a => Hashable (FunctionDef a)
 
 instance Annotated SortDec where
   ann (SortDec _ _ a) = a
