@@ -6,18 +6,37 @@ author:              "Masahiro Sakai"
 maintainer:          "masahiro.sakai@gmail.com"
 copyright:           "2026 Masahiro Sakai"
 
-extra-source-files:
+extra-doc-files:
 - README.md
 - CHANGELOG.md
+- conformance/README.md
+
+extra-source-files:
 - test/samples/smt/*.smt2
 
 synopsis:            Parsing, printing and incremental I/O for the SMT-LIB 2 format
 category:            Language, SMT
 
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/msakai/language-smtlib#readme>
+tested-with:
+- GHC == 9.6.7
+- GHC == 9.8.4
+- GHC == 9.10.3
+- GHC == 9.12.4
+
+description: >-
+  A @Text@-based library for parsing, printing, and incrementally streaming the
+  SMT-LIB 2.7 format.
+
+
+  It provides a parametric, fully-annotated AST in which every node carries an
+  optional source-span annotation; a megaparsec-based parser with both
+  whole-text and incremental (S-expression framing) entry points, suitable for
+  solver pipes and REPLs; and a prettyprinter-based printer that guarantees
+  @parse . render == id@ for well-formed trees.
+
+
+  See the README at <https://github.com/msakai/language-smtlib#readme> for
+  details and examples.
 
 flags:
   conformance:
@@ -26,6 +45,14 @@ flags:
       external SMT-LIB benchmark suites (e.g. the SMT-LIB / SMT-COMP
       collections on Zenodo).  Off by default: it is not part of the normal
       build, test suite or CI.
+    manual: true
+    default: false
+  profiling:
+    description: >-
+      Add -fprof-auto (automatic cost centres) to this package's own components
+      when building with profiling.  Off by default so that downstream packages
+      profiling their own code are not cluttered with cost centres from
+      language-smtlib.
     manual: true
     default: false
 
@@ -55,14 +82,16 @@ ghc-options:
 library:
   source-dirs: src
   dependencies:
-  - containers
+  - containers >= 0.6 && < 0.8
   - megaparsec >= 9.0 && < 10
-  - parser-combinators
-  - prettyprinter >= 1.7
-  - scientific
-  - text
-  ghc-prof-options:
-  - -fprof-auto
+  - parser-combinators >= 1.0 && < 1.4
+  - prettyprinter >= 1.7 && < 1.8
+  - scientific >= 0.3 && < 0.4
+  - text >= 1.2 && < 2.2
+  when:
+  - condition: flag(profiling)
+    ghc-prof-options:
+    - -fprof-auto
 
 executables:
   language-smtlib-exe:
@@ -72,11 +101,13 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    ghc-prof-options:
-    - -fprof-auto
+    when:
+    - condition: flag(profiling)
+      ghc-prof-options:
+      - -fprof-auto
     dependencies:
     - language-smtlib
-    - text
+    - text >= 1.2 && < 2.2
 
   language-smtlib-conformance:
     main:                Main.hs
@@ -85,16 +116,17 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    ghc-prof-options:
-    - -fprof-auto
     when:
     - condition: "!flag(conformance)"
       buildable: false
+    - condition: flag(profiling)
+      ghc-prof-options:
+      - -fprof-auto
     dependencies:
     - language-smtlib
-    - text
-    - directory
-    - filepath
+    - text >= 1.2 && < 2.2
+    - directory >= 1.3 && < 1.4
+    - filepath >= 1.4 && < 1.6
 
 tests:
   language-smtlib-test:
