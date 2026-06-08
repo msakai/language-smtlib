@@ -3,6 +3,10 @@
 module Main (main) where
 
 import Control.Monad (filterM, forM)
+import Data.Hashable (Hashable, hash)
+import qualified Data.HashMap.Strict as HM
+import Data.List (nub)
+import qualified Data.Map.Strict as M
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
@@ -28,6 +32,7 @@ main = do
     [ roundTripTests
     , framerTests
     , streamingTests
+    , instancesTests
     , sampleTests
     ]
 
@@ -140,6 +145,36 @@ propFrameEqualsDirect cmds =
       perFrame = traverse (\f -> noAnn <$> parse (sc *> pCommand <* eof) "<f>" f) frames
   in counterexample (T.unpack txt) $
        (direct == Right cmds) .&&. either (const False) (== cmds) perFrame
+
+-- Ord / Hashable instances ---------------------------------------------------
+
+instancesTests :: TestTree
+instancesTests = testGroup "Ord / Hashable instances"
+  [ testProperty "Eq agrees with Ord (Term)"       (propEqOrd :: Term () -> Term () -> Property)
+  , testProperty "Eq agrees with Ord (Command)"    (propEqOrd :: Command () -> Command () -> Property)
+  , testProperty "Eq implies equal hash (Term)"    (propEqHash :: Term () -> Property)
+  , testProperty "Eq implies equal hash (Command)" (propEqHash :: Command () -> Property)
+  , testProperty "usable as Map key (Term)"        (propMapKey :: [Term ()] -> Property)
+  , testProperty "usable as HashMap key (Command)" (propHashMapKey :: [Command ()] -> Property)
+  ]
+
+-- | The derived 'Ord' must be consistent with the derived 'Eq'.
+propEqOrd :: (Eq a, Ord a) => a -> a -> Property
+propEqOrd x y = (x == y) === (compare x y == EQ)
+
+-- | Structurally-equal values (here, a value against itself) hash equally;
+-- this is the law every 'Hashable' instance must satisfy.
+propEqHash :: Hashable a => a -> Property
+propEqHash x = hash x === hash x
+
+-- | A consistent 'Ord' lets values act as 'Data.Map' keys: a map keyed by a
+-- list has exactly as many entries as the list has distinct elements.
+propMapKey :: Ord a => [a] -> Property
+propMapKey xs = M.size (M.fromList [(x, ()) | x <- xs]) === length (nub xs)
+
+-- | Likewise for 'Data.HashMap' via the 'Hashable'\/'Eq' instances.
+propHashMapKey :: (Eq a, Hashable a) => [a] -> Property
+propHashMapKey xs = HM.size (HM.fromList [(x, ()) | x <- xs]) === length (nub xs)
 
 -- Sample files ---------------------------------------------------------------
 

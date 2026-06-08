@@ -12,6 +12,8 @@ module Language.SMTLIB.Syntax.Annotation
   ) where
 
 import Data.Functor (void)
+import Data.Hashable (Hashable)
+import GHC.Generics (Generic)
 
 -- | A half-open span @[spanStart, spanEnd)@ in the source text, measured in
 -- 0-based character offsets.  Offsets (rather than line\/column pairs) keep span
@@ -20,7 +22,9 @@ import Data.Functor (void)
 data SrcSpan = SrcSpan
   { spanStart :: !Int
   , spanEnd   :: !Int
-  } deriving (Eq, Ord, Show)
+  } deriving (Eq, Ord, Show, Generic)
+
+instance Hashable SrcSpan
 
 -- | Access or replace the top-level annotation of a node.
 --
