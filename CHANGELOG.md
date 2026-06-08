@@ -8,7 +8,8 @@ and this project adheres to the
 
 ## Unreleased
 
-### Added
+## 0.1.0.0 - 2026-06-08
+
 - Initial release of the `Text`-based SMT-LIB 2 library.
 - Full SMT-LIB 2.7 AST (`Language.SMTLIB.Syntax`) with an optional source-span
   annotation parameter on every node, including datatypes, `match` and `par`.
@@ -30,5 +31,3 @@ and this project adheres to the
 - Solver command-response types and parsers (`Language.SMTLIB.*.Response`).
 - Test suite: round-trip properties for every AST type, framer unit tests,
   framer-vs-parser equivalence, and parse/render idempotence over sample files.
-
-## 0.1.0.0 - YYYY-MM-DD
