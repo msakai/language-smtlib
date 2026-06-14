@@ -12,6 +12,7 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
 import System.FilePath ((</>), takeExtension)
+import System.IO (IOMode (ReadMode), hSetEncoding, utf8, withFile)
 import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
@@ -189,9 +190,17 @@ loadSampleTests = do
       let smt2 = [ dir </> e | e <- entries, takeExtension e == ".smt2" ]
       files <- filterM doesFileExist smt2
       cases <- forM files $ \f -> do
-        src <- T.readFile f
+        src <- readFileUtf8 f
         pure (testCase f (assertParsesAndRoundTrips src))
       pure (testGroup "samples (parse + render idempotence)" cases)
+
+-- | Read a file as UTF-8, independent of the process's locale encoding.
+-- (Sample files contain non-ASCII symbols, so the default locale-based
+-- 'T.readFile' would fail under a non-UTF-8 locale such as @C@/@POSIX@.)
+readFileUtf8 :: FilePath -> IO Text
+readFileUtf8 f = withFile f ReadMode $ \h -> do
+  hSetEncoding h utf8
+  T.hGetContents h
 
 assertParsesAndRoundTrips :: Text -> Assertion
 assertParsesAndRoundTrips src =
