@@ -13,6 +13,9 @@ and this project adheres to the
   comparisons and hashes are structural and follow the existing `Eq`
   (numeric literals compare by raw lexeme; annotations participate, so erase
   them with `noAnn` for annotation-insensitive keys).
+- Read the `test/samples/smt/` sample files as UTF-8 explicitly, so the test
+  suite no longer fails on the non-ASCII samples under a non-UTF-8 locale
+  (e.g. `C`/`POSIX`).
 
 ## 0.1.0.0 - 2026-06-08
 
