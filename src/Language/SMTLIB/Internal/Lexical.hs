@@ -20,12 +20,6 @@ import qualified Data.Text as T
 -- | The SMT-LIB 2.7 reserved words: the auxiliary tokens plus every command
 -- name.  A simple symbol may not coincide with one of these, so a @Symbol@
 -- whose value is a reserved word must be printed quoted.
---
--- Note: @lambda@ is included as a reserved word, consistently with the other
--- binders (@forall@\/@exists@\/@let@\/@match@), so that a @(lambda ...)@ term
--- round-trips unambiguously.  Version 2.7 lists @lambda@ among its reserved
--- words (concrete-syntax Appendix B) and gives it a dedicated binder production;
--- it was newly added in 2.7 (the 2.6 reference has no @lambda@ at all).
 reservedWords :: Set Text
 reservedWords = Set.fromList $
   -- auxiliary / general reserved words
