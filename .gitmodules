@@ -1,0 +1,3 @@
+[submodule "docs/specs/SMT-LIB-2"]
+	path = docs/specs/SMT-LIB-2
+	url = https://github.com/SMT-LIB/SMT-LIB-2.git
