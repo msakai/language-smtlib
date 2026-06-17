@@ -87,9 +87,25 @@ driver h = do
   higher-order apply operator `_` is parsed where it coincides with the
   indexed-identifier syntax (`(_ f x)`), matching the 2.7 concrete grammar
   (Appendix B), which adds no dedicated application production.
+- **Scope.** The library covers SMT-LIB *scripts* (commands, terms, sorts,
+  datatypes) and the *solver-response* protocol. The theory/logic **catalog**
+  format — the `(theory …)` and `(logic …)` declarations with their attribute
+  grammars (`sort_symbol_decl`, `par_fun_symbol_decl`, `theory_attribute`, …) —
+  is intentionally **out of scope**: it describes the theory/logic definitions
+  published on smt-lib.org, not input a solver reads from a script.
 - As a benign superset, Unicode letters are accepted in simple symbols (so
   identifiers like `あいうえお` need no quoting), and `(push)` / `(pop)` without
   a numeral are read as `(push 1)` / `(pop 1)`.
+- A few other inputs the 2.7 grammar forbids are also accepted as benign
+  supersets — they still round-trip: leading-zero numerals (`007`), leading-zero
+  or trailing-dot decimals (`01.5`, `1.`, kept verbatim via the raw `SCDecimal`
+  lexeme), and non-printable control characters inside string and quoted-symbol
+  literals.
+- Some *well-formedness* constraints that the grammar states separately from the
+  production rules are not enforced (the parser is syntactic only): in particular
+  the equal-length linkage between the two lists of `declare-datatypes`
+  (`sort_dec`ⁿ⁺¹ / `datatype_dec`ⁿ⁺¹) and of `define-funs-rec`
+  (`function_dec`ⁿ⁺¹ / `term`ⁿ⁺¹) is accepted even when the counts differ.
 - Numeric literals (decimal/hex/binary) keep their raw lexeme, so printing
   round-trips byte-for-byte; use the interpreters in
   `Language.SMTLIB.Syntax.Constant` for their values.
