@@ -121,9 +121,10 @@ stack test     # round-trip properties, framer units, and sample files
 
 To stress-test the parser and printer against the full SMT-LIB / SMT-COMP
 benchmark suites on [Zenodo](https://zenodo.org/), there is an optional
-`language-smtlib-conformance` driver, built only behind the `tools` flag (so it
-is never part of the normal build, test suite, or CI) and run on benchmark data
-that is downloaded separately and never committed. See
+`language-smtlib-conformance` driver, built only behind the `tools` flag. It is
+not part of the normal build or test suite; CI compiles it (behind the flag) so
+it cannot bit-rot, but never runs it. Running it requires benchmark data that is
+downloaded separately and never committed. See
 [`conformance/README.md`](conformance/README.md).
 
 ### Round-trip checking a corpus of `.smt2` files
