@@ -72,13 +72,13 @@ source-repository head
   type: git
   location: https://github.com/msakai/language-smtlib
 
-flag conformance
-  description: Build language-smtlib-conformance, a driver that round-trips large external SMT-LIB benchmark suites (e.g. the SMT-LIB / SMT-COMP collections on Zenodo).  Off by default: it is not part of the normal build, test suite or CI.
+flag profiling
+  description: Add -fprof-auto (automatic cost centres) to this package's own components when building with profiling.  Off by default so that downstream packages profiling their own code are not cluttered with cost centres from language-smtlib.
   manual: True
   default: False
 
-flag profiling
-  description: Add -fprof-auto (automatic cost centres) to this package's own components when building with profiling.  Off by default so that downstream packages profiling their own code are not cluttered with cost centres from language-smtlib.
+flag tools
+  description: Build the developer-facing command-line tools shipped with this package: language-smtlib-fmt, a round-trip front end that parses an SMT-LIB script and re-emits it in canonical form; and language-smtlib-conformance, a driver that round-trips large external SMT-LIB benchmark suites (e.g. the SMT-LIB / SMT-COMP collections on Zenodo).  Off by default: these are development utilities, not needed by downstream packages that only depend on the library.
   manual: True
   default: False
 
@@ -159,12 +159,12 @@ executable language-smtlib-conformance
     , language-smtlib
     , text >=1.2 && <2.2
   default-language: Haskell2010
-  if !flag(conformance)
+  if !flag(tools)
     buildable: False
   if flag(profiling)
     ghc-prof-options: -fprof-auto
 
-executable language-smtlib-exe
+executable language-smtlib-fmt
   main-is: Main.hs
   other-modules:
       Paths_language_smtlib
@@ -187,6 +187,8 @@ executable language-smtlib-exe
     , language-smtlib
     , text >=1.2 && <2.2
   default-language: Haskell2010
+  if !flag(tools)
+    buildable: False
   if flag(profiling)
     ghc-prof-options: -fprof-auto
 

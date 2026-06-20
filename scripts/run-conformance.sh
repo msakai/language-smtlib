@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Build the conformance checker (behind the `conformance` cabal flag) and run it
+# Build the conformance checker (behind the `tools` cabal flag) and run it
 # over a directory of benchmarks.  Thin convenience wrapper; see
 # conformance/README.md for the full workflow.
 #
@@ -18,11 +18,11 @@ if [ ${#args[@]} -eq 0 ]; then
 fi
 
 if command -v stack >/dev/null 2>&1; then
-  stack build --flag language-smtlib:conformance
-  exec stack exec language-smtlib-conformance -- "${args[@]}"
+  stack build --flag language-smtlib:tools
+  exec stack exec --flag language-smtlib:tools language-smtlib-conformance -- "${args[@]}"
 elif command -v cabal >/dev/null 2>&1; then
-  cabal build -f conformance language-smtlib-conformance
-  exec cabal run -f conformance language-smtlib-conformance -- "${args[@]}"
+  cabal build -f tools language-smtlib-conformance
+  exec cabal run -f tools language-smtlib-conformance -- "${args[@]}"
 else
   echo "run-conformance.sh: need stack or cabal on PATH" >&2
   exit 1

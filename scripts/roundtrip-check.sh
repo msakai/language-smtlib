@@ -2,7 +2,7 @@
 #
 # Round-trip / idempotency check of the parser+printer against a corpus of
 # `.smt2` files (e.g. the example/regression suites shipped with cvc5, opensmt,
-# yices2, z3).  For each file it runs `language-smtlib-exe` (parse -> render)
+# yices2, z3).  For each file it runs `language-smtlib-fmt` (parse -> render)
 # twice and compares the two renderings:
 #
 #   stage 1:  parse(src)  -> out1     (PARSE_FAIL   if the source does not parse)
@@ -21,7 +21,7 @@
 #                  directories are searched recursively for *.smt2
 #
 # Options:
-#   --build        run `stack build` before checking
+#   --build        run `stack build --flag language-smtlib:tools` before checking
 #   --out DIR      write the failing-file lists into DIR:
 #                    parse-fail.tsv   "<file>\t<first error line>"
 #                    reprint-fail.txt one path per line
@@ -55,15 +55,17 @@ if ! command -v stack >/dev/null 2>&1; then
 fi
 
 if [ "$build" -eq 1 ]; then
-  stack build
+  stack build --flag language-smtlib:tools
 fi
 
-# `language-smtlib-exe` is run via stack.  Resolve the built binary once rather
-# than paying `stack exec` startup per file (there can be thousands); this is
-# equivalent to invoking `stack exec -- language-smtlib-exe ...` on each file.
-exe="$(stack exec -- sh -c 'command -v language-smtlib-exe' 2>/dev/null)"
+# `language-smtlib-fmt` is run via stack.  It lives behind the `tools` cabal flag,
+# so `--build` must be used (or the tools built beforehand).  Resolve the built
+# binary once rather than paying `stack exec` startup per file (there can be
+# thousands); this is equivalent to invoking
+# `stack exec -- language-smtlib-fmt ...` on each file.
+exe="$(stack exec --flag language-smtlib:tools -- sh -c 'command -v language-smtlib-fmt' 2>/dev/null)"
 if [ -z "${exe:-}" ] || [ ! -x "$exe" ]; then
-  echo "roundtrip-check.sh: language-smtlib-exe not found; run with --build first" >&2
+  echo "roundtrip-check.sh: language-smtlib-fmt not found; run with --build first" >&2
   exit 1
 fi
 

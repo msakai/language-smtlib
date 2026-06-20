@@ -39,12 +39,15 @@ description: >-
   details and examples.
 
 flags:
-  conformance:
+  tools:
     description: >-
-      Build language-smtlib-conformance, a driver that round-trips large
-      external SMT-LIB benchmark suites (e.g. the SMT-LIB / SMT-COMP
-      collections on Zenodo).  Off by default: it is not part of the normal
-      build, test suite or CI.
+      Build the developer-facing command-line tools shipped with this package:
+      language-smtlib-fmt, a round-trip front end that parses an SMT-LIB script
+      and re-emits it in canonical form; and language-smtlib-conformance, a
+      driver that round-trips large external SMT-LIB benchmark suites (e.g. the
+      SMT-LIB / SMT-COMP collections on Zenodo).  Off by default: these are
+      development utilities, not needed by downstream packages that only depend
+      on the library.
     manual: true
     default: false
   profiling:
@@ -96,7 +99,7 @@ library:
     - -fprof-auto
 
 executables:
-  language-smtlib-exe:
+  language-smtlib-fmt:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -104,6 +107,8 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     when:
+    - condition: "!flag(tools)"
+      buildable: false
     - condition: flag(profiling)
       ghc-prof-options:
       - -fprof-auto
@@ -119,7 +124,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     when:
-    - condition: "!flag(conformance)"
+    - condition: "!flag(tools)"
       buildable: false
     - condition: flag(profiling)
       ghc-prof-options:

@@ -18,10 +18,10 @@
 --
 -- This tool is intentionally /not/ part of the normal build or test suite: the
 -- benchmark data is huge and lives outside the repository.  It is only built
--- when the @conformance@ cabal flag is set, e.g.
+-- when the @tools@ cabal flag is set, e.g.
 --
 -- @
--- stack build --flag language-smtlib:conformance
+-- stack build --flag language-smtlib:tools
 -- stack exec language-smtlib-conformance -- benchmarks\/
 -- @
 module Main (main) where

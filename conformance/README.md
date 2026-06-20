@@ -7,8 +7,8 @@ collections — in particular the SMT-LIB / SMT-COMP suites published on
 
 It is **deliberately excluded from the normal build, test suite and CI**: the
 benchmark data is huge (tens to hundreds of GB once extracted) and lives outside
-the repository. The tool is only built when the `conformance` cabal flag is set,
-and the benchmark data is never committed (the default download directory
+the repository. The tool is only built when the `tools` cabal flag is set, and
+the benchmark data is never committed (the default download directory
 `benchmarks/` is gitignored).
 
 ## What it checks
@@ -38,8 +38,8 @@ scripts/fetch-smtlib-benchmarks.sh --record 11061097 --list
 scripts/fetch-smtlib-benchmarks.sh --record 11061097 QF_BV QF_LIA
 
 # 2. Build the checker with the flag enabled:
-stack build --flag language-smtlib:conformance
-#    (with cabal:  cabal build -f conformance language-smtlib-conformance)
+stack build --flag language-smtlib:tools
+#    (with cabal:  cabal build -f tools language-smtlib-conformance)
 
 # 3. Run it over the downloaded files:
 stack exec language-smtlib-conformance -- benchmarks/
