@@ -32,11 +32,11 @@ stack --stack-yaml stack-ghc-9.12.yaml test
 Profiling: `-fprof-auto` (automatic cost centres) is gated behind the manual `profiling` flag — off by default so it does not pollute the profiles of downstream packages. Enable it alongside profiling builds:
 
 ```
-stack build --flag language-smtlib:profiling --library-profiling --executable-profiling
-stack exec --profile -- language-smtlib-exe FILE.smt2 +RTS -p -s
+stack build --flag language-smtlib:tools --flag language-smtlib:profiling --library-profiling --executable-profiling
+stack exec --profile -- language-smtlib-fmt FILE.smt2 +RTS -p -s
 ```
 
-`language-smtlib-exe` (`app/Main.hs`) parses a file/stdin and re-emits it canonically — handy for eyeballing round-trip output. The `language-smtlib-conformance` driver is gated behind the manual `conformance` flag (`stack build --flag language-smtlib:conformance`) and is never in the normal build/test/CI; see `conformance/README.md` and `scripts/`.
+Both executables are developer tools gated behind the manual `tools` flag (`stack build --flag language-smtlib:tools`), so they are off by default and out of a plain `stack build`/`stack test` (CI passes the flag explicitly). `language-smtlib-fmt` (`app/Main.hs`) parses a file/stdin and re-emits it canonically — handy for eyeballing round-trip output. The `language-smtlib-conformance` driver round-trips large external benchmark suites and is never run in the normal build/test/CI; see `conformance/README.md` and `scripts/`.
 
 ## Architecture
 

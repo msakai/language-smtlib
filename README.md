@@ -121,9 +121,9 @@ stack test     # round-trip properties, framer units, and sample files
 
 To stress-test the parser and printer against the full SMT-LIB / SMT-COMP
 benchmark suites on [Zenodo](https://zenodo.org/), there is an optional
-`language-smtlib-conformance` driver, built only behind the `conformance` flag
-(so it is never part of the normal build, test suite, or CI) and run on
-benchmark data that is downloaded separately and never committed. See
+`language-smtlib-conformance` driver, built only behind the `tools` flag (so it
+is never part of the normal build, test suite, or CI) and run on benchmark data
+that is downloaded separately and never committed. See
 [`conformance/README.md`](conformance/README.md).
 
 ### Round-trip checking a corpus of `.smt2` files
@@ -131,8 +131,9 @@ benchmark data that is downloaded separately and never committed. See
 For a quick, dependency-free check against an arbitrary collection of `.smt2`
 files (for example the example/regression suites shipped with cvc5, OpenSMT,
 Yices2, or Z3), use [`scripts/roundtrip-check.sh`](scripts/roundtrip-check.sh).
-It drives the `language-smtlib-exe` front end (parse → render) over every file
-and verifies that the canonical rendering is idempotent:
+It drives the `language-smtlib-fmt` front end (parse → render) over every file
+and verifies that the canonical rendering is idempotent (the script builds it
+with the `tools` flag when run with `--build`):
 
 ```
 scripts/roundtrip-check.sh [--build] [--out DIR] [PATH...]

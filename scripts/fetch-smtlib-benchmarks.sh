@@ -184,6 +184,6 @@ fi
 echo "Done. Benchmarks are under: $OUTDIR"
 if [ "$DO_EXTRACT" -eq 1 ]; then
   echo "Run the conformance checker, e.g.:"
-  echo "  stack build --flag language-smtlib:conformance"
+  echo "  stack build --flag language-smtlib:tools"
   echo "  stack exec language-smtlib-conformance -- $OUTDIR"
 fi

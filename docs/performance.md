@@ -20,12 +20,13 @@ profiling their own code are not cluttered with cost centres from this library
 Build with profiling enabled, then run the round-trip executable to get a report:
 
 ```
-stack build --flag language-smtlib:profiling --library-profiling --executable-profiling
-stack exec --profile -- language-smtlib-exe FILE.smt2 +RTS -p -s
+stack build --flag language-smtlib:tools --flag language-smtlib:profiling --library-profiling --executable-profiling
+stack exec --profile -- language-smtlib-fmt FILE.smt2 +RTS -p -s
 ```
 
-`language-smtlib-exe` (`app/Main.hs`) parses a file/stdin and re-emits it
+`language-smtlib-fmt` (`app/Main.hs`) parses a file/stdin and re-emits it
 canonically, so it exercises both the parser and the printer on real input.
+It lives behind the `tools` cabal flag.
 
 ## What has been done — PR #6 (`perf-parser`, merged 2026-06-07)
 

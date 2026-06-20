@@ -17,7 +17,7 @@ main = do
   (name, src) <- case args of
     []     -> (,) "<stdin>" <$> T.getContents
     [f]    -> (,) f <$> T.readFile f
-    _      -> hPutStrLn stderr "usage: language-smtlib-exe [FILE]" >> exitFailure >> pure ("", "")
+    _      -> hPutStrLn stderr "usage: language-smtlib-fmt [FILE]" >> exitFailure >> pure ("", "")
   case parseScript name src of
     Left err     -> hPutStrLn stderr (errorBundlePretty err) >> exitFailure
     Right script -> T.putStr (renderScript script)
