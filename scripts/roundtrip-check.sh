@@ -63,7 +63,7 @@ fi
 # binary once rather than paying `stack exec` startup per file (there can be
 # thousands); this is equivalent to invoking
 # `stack exec -- language-smtlib-fmt ...` on each file.
-exe="$(stack exec --flag language-smtlib:tools -- sh -c 'command -v language-smtlib-fmt' 2>/dev/null)"
+exe="$(stack exec -- sh -c 'command -v language-smtlib-fmt' 2>/dev/null)"
 if [ -z "${exe:-}" ] || [ ! -x "$exe" ]; then
   echo "roundtrip-check.sh: language-smtlib-fmt not found; run with --build first" >&2
   exit 1

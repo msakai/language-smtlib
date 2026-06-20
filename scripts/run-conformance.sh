@@ -19,7 +19,7 @@ fi
 
 if command -v stack >/dev/null 2>&1; then
   stack build --flag language-smtlib:tools
-  exec stack exec --flag language-smtlib:tools language-smtlib-conformance -- "${args[@]}"
+  exec stack exec language-smtlib-conformance -- "${args[@]}"
 elif command -v cabal >/dev/null 2>&1; then
   cabal build -f tools language-smtlib-conformance
   exec cabal run -f tools language-smtlib-conformance -- "${args[@]}"
