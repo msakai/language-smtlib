@@ -5,11 +5,12 @@ stress-tests the parser and printer against large, real-world SMT-LIB 2 benchmar
 collections — in particular the SMT-LIB / SMT-COMP suites published on
 [Zenodo](https://zenodo.org/).
 
-It is **deliberately excluded from the normal build, test suite and CI**: the
+It is **never run as part of the normal build, test suite or CI**: the
 benchmark data is huge (tens to hundreds of GB once extracted) and lives outside
-the repository. The tool is only built when the `tools` cabal flag is set, and
-the benchmark data is never committed (the default download directory
-`benchmarks/` is gitignored).
+the repository. The tool is built only when the `tools` cabal flag is set — CI
+compiles it behind that flag so it cannot bit-rot, but never runs it — and the
+benchmark data is never committed (the default download directory `benchmarks/`
+is gitignored).
 
 ## What it checks
 
