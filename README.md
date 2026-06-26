@@ -109,6 +109,15 @@ driver h = do
 - Numeric literals (decimal/hex/binary) keep their raw lexeme, so printing
   round-trips byte-for-byte; use the interpreters in
   `Language.SMTLIB.Syntax.Constant` for their values.
+- **Unknown commands and responses.** By default command parsing is strict: an
+  unrecognized command (an unknown head keyword) is a parse error. The lenient
+  parsers `pCommandLenient` / `pScriptLenient` (in
+  `Language.SMTLIB.Parser.Command`, run through `parseWith`) instead keep such a
+  command as `UnknownCommand keyword args`, capturing its raw argument
+  s-expressions so the application can decide what to do — the fallback fires
+  only on an unknown head keyword, so a recognized command with malformed
+  arguments still fails. Solver-response parsing (`pCommandResponse`) is always
+  lenient, keeping an unrecognized response as `ROther`; both forms round-trip.
 
 ## Building
 

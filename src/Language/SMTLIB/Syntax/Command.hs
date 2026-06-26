@@ -11,7 +11,7 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 
 import Language.SMTLIB.Syntax.Annotation (Annotated(..))
-import Language.SMTLIB.Syntax.Attribute (Attribute)
+import Language.SMTLIB.Syntax.Attribute (Attribute, SExpr)
 import Language.SMTLIB.Syntax.Constant (Keyword, Symbol)
 import Language.SMTLIB.Syntax.Datatype
   (DatatypeDec, FunctionDec, FunctionDef, SortDec)
@@ -83,6 +83,13 @@ data Command a
   | GetInfo          (InfoFlag a)                       a
   | Echo             !Text                              a
   | Exit             a
+  | UnknownCommand   !Symbol [SExpr a]                  a
+    -- ^ A syntactically well-formed command whose head keyword is not one of
+    -- the recognized commands above.  Carries the head keyword and the raw
+    -- argument s-expressions so the application can decide how to handle it.
+    -- Only produced by the lenient parsers
+    -- (@Language.SMTLIB.Parser.Command.pCommandLenient@ \/ @pScriptLenient@);
+    -- the strict parsers reject an unknown head keyword instead.
   deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 -- | A script is a sequence of commands.
@@ -180,6 +187,7 @@ instance Annotated Command where
     GetInfo _ a             -> a
     Echo _ a                -> a
     Exit a                  -> a
+    UnknownCommand _ _ a    -> a
   setAnn a = \case
     SetLogic x _            -> SetLogic x a
     SetOption x _           -> SetOption x a
@@ -213,3 +221,4 @@ instance Annotated Command where
     GetInfo x _             -> GetInfo x a
     Echo x _                -> Echo x a
     Exit _                  -> Exit a
+    UnknownCommand kw xs _  -> UnknownCommand kw xs a

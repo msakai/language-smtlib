@@ -10,6 +10,15 @@
 --     so it can distinguish \"needs more input\" ('Partial') from a real
 --     framing error, and only invokes megaparsec on a complete frame.  This is
 --     the entry point for REPL\/pipe drivers.
+--
+-- The whole-text entry points are /strict/: an unrecognized command is a parse
+-- error.  For lenient parsing — keeping an unknown command as
+-- 'Language.SMTLIB.Syntax.Command.UnknownCommand' for the application to handle
+-- — run the lenient parsers from "Language.SMTLIB.Parser.Command" through
+-- 'parseWith', e.g. @'parseWith' 'Language.SMTLIB.Parser.Command.pScriptLenient'@.
+-- Solver-response parsing
+-- ("Language.SMTLIB.Parser.Response") is always lenient: an unrecognized
+-- response is kept as 'Language.SMTLIB.Syntax.Response.ROther'.
 module Language.SMTLIB.Parser
   ( -- * Parser monad
     P

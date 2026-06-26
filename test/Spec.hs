@@ -3,6 +3,7 @@
 module Main (main) where
 
 import Control.Monad (filterM, forM)
+import Data.Either (isLeft)
 import Data.Hashable (Hashable, hash)
 import qualified Data.HashMap.Strict as HM
 import Data.List (nub)
@@ -22,6 +23,7 @@ import Arbitrary ()
 import Language.SMTLIB
 import Language.SMTLIB.Parser.Command
 import Language.SMTLIB.Parser.Internal
+import Language.SMTLIB.Parser.Response (pCommandResponse)
 import Language.SMTLIB.Parser.SExpr
 import Language.SMTLIB.Parser.Term
 import Language.SMTLIB.Reader (frameAll)
@@ -31,6 +33,7 @@ main = do
   sampleTests <- loadSampleTests
   defaultMain $ testGroup "language-smtlib"
     [ roundTripTests
+    , leniencyTests
     , framerTests
     , streamingTests
     , instancesTests
@@ -72,6 +75,62 @@ roundTripTests = testGroup "round-trip (parse . render == id)"
   , testProperty "Option"         (roundTrip pOption         :: Option () -> Property)
   , testProperty "InfoFlag"       (roundTrip pInfoFlag       :: InfoFlag () -> Property)
   , testProperty "Command"        (roundTrip pCommand        :: Command () -> Property)
+  ]
+
+-- Leniency: unknown commands / responses -------------------------------------
+
+-- | A 'Command' built from an unrecognized head keyword, for exercising the
+-- lenient parser's round-trip.  The head is a simple word guaranteed not to be
+-- one of the recognized commands.
+newtype UnknownCmd = UnknownCmd (Command ()) deriving Show
+
+instance Arbitrary UnknownCmd where
+  arbitrary = do
+    kw   <- genUnknownHead
+    args <- resize 3 (listOf (resize 3 arbitrary))
+    pure (UnknownCmd (UnknownCommand kw args ()))
+
+genUnknownHead :: Gen Text
+genUnknownHead = (T.pack <$> word) `suchThat` (`notElem` knownCommandWords)
+  where
+    word = (:) <$> elements ['a'..'z']
+               <*> resize 6 (listOf (elements (['a'..'z'] ++ "-")))
+
+knownCommandWords :: [Text]
+knownCommandWords =
+  [ "set-logic", "set-option", "set-info", "declare-sort-parameter"
+  , "declare-sort", "declare-const", "define-const", "declare-datatypes"
+  , "declare-datatype", "declare-fun", "define-sort", "define-fun-rec"
+  , "define-funs-rec", "define-fun", "push", "pop", "reset-assertions"
+  , "reset", "assert", "check-sat-assuming", "check-sat", "get-assertions"
+  , "get-assignment", "get-info", "get-model", "get-option", "get-proof"
+  , "get-unsat-assumptions", "get-unsat-core", "get-value", "echo", "exit"
+  ]
+
+leniencyTests :: TestTree
+leniencyTests = testGroup "leniency (unknown commands / responses)"
+  [ testProperty "UnknownCommand round-trips via pCommandLenient" $
+      \(UnknownCmd c) -> roundTrip pCommandLenient c
+  , testCase "strict pCommand rejects an unknown head keyword" $
+      assertBool "expected a parse failure" $
+        isLeft (parse (sc *> pCommand <* eof) "<l>" "(frobnicate 1 2)")
+  , testCase "lenient pCommand keeps an unknown head keyword" $
+      case parse (sc *> pCommandLenient <* eof) "<l>" "(frobnicate 1 2)" of
+        Right (UnknownCommand kw args _) -> do
+          kw @?= "frobnicate"
+          length args @?= 2
+        _ -> assertFailure "expected UnknownCommand"
+  , testCase "lenient pCommand still rejects a malformed known command" $
+      assertBool "expected a parse failure" $
+        isLeft (parse (sc *> pCommandLenient <* eof) "<l>" "(assert)")
+  , testCase "unknown response falls back to ROther" $
+      case parse (sc *> pCommandResponse <* eof) "<l>" "(custom-response 1 2)" of
+        Right (ROther _) -> pure ()
+        _ -> assertFailure "expected ROther"
+  , testCase "known responses are still recognized" $
+      case parse (sc *> pCommandResponse <* eof) "<l>" "success" of
+        Right RSuccess -> pure ()
+        _ -> assertFailure "expected RSuccess"
   ]
 
 -- Framer ---------------------------------------------------------------------
