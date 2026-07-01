@@ -251,6 +251,7 @@ instance Pretty (Command a) where
     GetInfo flag _          -> parens (text "get-info" <+> pretty flag)
     Echo s _                -> parens (text "echo" <+> prettyStringLit s)
     Exit _                  -> parens (text "exit")
+    UnknownCommand kw args _ -> parens (hsep (text kw : map pretty args))
 
 instance Pretty CheckSatResponse where
   pretty Sat     = text "sat"
@@ -305,4 +306,5 @@ instance Pretty (CommandResponse a) where
     RGetUnsatAssumptions ts -> parens (hsep (map pretty ts))
     RGetUnsatCore ss       -> parens (hsep (map prettySymbol ss))
     RGetValue vps          -> parens (hsep (map pretty vps))
+    ROther e               -> pretty e
     where assignPair (s, b) = parens (prettySymbol s <+> prettyBool b)

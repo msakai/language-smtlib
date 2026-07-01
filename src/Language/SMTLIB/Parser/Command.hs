@@ -1,7 +1,9 @@
 -- | Parsers for commands, options and info flags.
 module Language.SMTLIB.Parser.Command
   ( pCommand
+  , pCommandLenient
   , pScript
+  , pScriptLenient
   , pOption
   , pInfoFlag
   ) where
@@ -20,14 +22,41 @@ import Language.SMTLIB.Syntax.Command
 pScript :: P (Script SrcSpan)
 pScript = many pCommand
 
+-- | Like 'pScript', but unrecognized commands are kept as
+-- 'Language.SMTLIB.Syntax.Command.UnknownCommand' rather than rejected.
+pScriptLenient :: P (Script SrcSpan)
+pScriptLenient = many pCommandLenient
+
 -- | A top-level @command@.
 --
 -- The command keyword is read once as a single word and then dispatched on,
 -- rather than attempting each alternative in turn.  This avoids re-scanning the
 -- keyword (and the backtracking that goes with it) for every command — a large
 -- saving on scripts dominated by a few command shapes (e.g. @assert@).
+--
+-- An unrecognized head keyword is a parse error.  Use 'pCommandLenient' to keep
+-- such commands as 'Language.SMTLIB.Syntax.Command.UnknownCommand' instead.
 pCommand :: P (Command SrcSpan)
-pCommand = withSpan $ do
+pCommand = pCommandWith $ \kw -> fail ("unknown command: " ++ T.unpack kw)
+
+-- | Like 'pCommand', but an unrecognized head keyword is accepted: the command
+-- is kept as 'Language.SMTLIB.Syntax.Command.UnknownCommand' carrying the
+-- keyword and its raw argument s-expressions, leaving the application to decide
+-- what to do with it.
+--
+-- The fallback fires /only/ on an unknown head keyword.  A recognized command
+-- with malformed arguments (e.g. @(assert)@) still fails, so genuine syntax
+-- errors in known commands are not silently swallowed.
+pCommandLenient :: P (Command SrcSpan)
+pCommandLenient = pCommandWith $ \kw -> UnknownCommand kw <$> many pSExpr
+
+-- | The shared command body, parameterized over how to handle an unrecognized
+-- head keyword.  The handler is given the keyword and yields a constructor
+-- still awaiting its final 'SrcSpan' field (as 'withSpan' expects).
+pCommandWith
+  :: (T.Text -> P (SrcSpan -> Command SrcSpan))
+  -> P (Command SrcSpan)
+pCommandWith onUnknown = withSpan $ do
   _ <- openP
   kw <- pAnyWord
   c <- case kw of
@@ -65,7 +94,7 @@ pCommand = withSpan $ do
     "get-value"               -> GetValue <$> parens (some pTerm)
     "echo"                    -> Echo <$> pStringLit
     "exit"                    -> pure Exit
-    _                         -> fail ("unknown command: " ++ T.unpack kw)
+    _                         -> onUnknown kw
   _ <- closeP
   pure c
 

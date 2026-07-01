@@ -38,6 +38,11 @@ import Language.SMTLIB.Syntax.Term (Term)
 -- | The context-free responses (@success@, @unsupported@, the @check-sat@
 -- answers, and @(error ...)@).  Use the specific parsers below for
 -- list-shaped responses.
+--
+-- Any other syntactically well-formed s-expression — a solver's non-standard or
+-- extension output — is kept as
+-- 'Language.SMTLIB.Syntax.Response.ROther' rather than rejected, leaving the
+-- application to decide what to do with it.
 pCommandResponse :: P (CommandResponse SrcSpan)
 pCommandResponse = choice
   [ tok "success"     $> RSuccess
@@ -45,7 +50,8 @@ pCommandResponse = choice
   , tok "sat"         $> RCheckSat Sat
   , tok "unsat"       $> RCheckSat Unsat
   , tok "unknown"     $> RCheckSat Unknown
-  , parens (tok "error" *> (RError <$> pStringLit))
+  , try (parens (tok "error" *> (RError <$> pStringLit)))
+  , ROther <$> pSExpr
   ]
 
 -- | @success | unsupported | (error string)@.

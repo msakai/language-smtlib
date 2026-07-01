@@ -36,7 +36,7 @@ stack build --flag language-smtlib:tools --flag language-smtlib:profiling --libr
 stack exec --profile -- language-smtlib-fmt FILE.smt2 +RTS -p -s
 ```
 
-Both executables are developer tools gated behind the manual `tools` flag (`stack build --flag language-smtlib:tools`), so they are off by default and out of a plain `stack build`/`stack test` (CI passes the flag explicitly). `language-smtlib-fmt` (`app/Main.hs`) parses a file/stdin and re-emits it canonically — handy for eyeballing round-trip output. The `language-smtlib-conformance` driver round-trips large external benchmark suites and is never run in the normal build/test/CI; see `conformance/README.md` and `scripts/`.
+Both executables are developer tools gated behind the manual `tools` flag (`stack build --flag language-smtlib:tools`), so they are off by default and out of a plain `stack build`/`stack test` (CI passes the flag explicitly). `language-smtlib-fmt` (`app/Main.hs`) parses a file/stdin and re-emits it canonically — handy for eyeballing round-trip output (pass `--lenient` to keep unrecognized commands as `UnknownCommand` rather than failing). The `language-smtlib-conformance` driver round-trips large external benchmark suites and is never run in the normal build/test/CI; see `conformance/README.md` and `scripts/`.
 
 ## Architecture
 

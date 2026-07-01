@@ -74,6 +74,11 @@ data CommandResponse a
   | RGetUnsatAssumptions [Term a]
   | RGetUnsatCore [Symbol]
   | RGetValue [ValuationPair a]
+  | ROther (SExpr a)
+    -- ^ A syntactically well-formed response that matches none of the
+    -- recognized forms above.  The raw s-expression is kept verbatim so the
+    -- application can decide how to handle a solver's non-standard or
+    -- extension output.  Produced by 'Language.SMTLIB.Parser.Response.pCommandResponse'.
   deriving (Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
 
 instance Hashable CheckSatResponse

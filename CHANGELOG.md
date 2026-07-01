@@ -8,6 +8,19 @@ and this project adheres to the
 
 ## Unreleased
 
+- Add `UnknownCommand` (to `Command`) and `ROther` (to `CommandResponse`) so a
+  syntactically well-formed but unrecognized command or solver response can be
+  kept verbatim for the application to handle, instead of failing the parse.
+  Command parsing stays strict by default (`parseScript`/`pCommand` reject an
+  unknown head keyword); the new lenient parsers `pCommandLenient` /
+  `pScriptLenient` (in `Language.SMTLIB.Parser.Command`, run via `parseWith`)
+  produce `UnknownCommand` instead.  The fallback fires only on an unknown head
+  keyword — a recognized command with malformed arguments still fails.
+  Solver-response parsing (`pCommandResponse`) is always lenient, keeping an
+  unrecognized response as `ROther`.
+- `language-smtlib-fmt` gains a `--lenient` flag that formats scripts
+  containing unrecognized commands (via `pScriptLenient`) instead of failing;
+  without it the formatter stays strict as before.
 - Derive `Ord`, `Generic` and `Hashable` for every AST type (and `SrcSpan`),
   so syntax trees can be used as `Data.Map`/`Data.HashMap` keys.  These
   comparisons and hashes are structural and follow the existing `Eq`
