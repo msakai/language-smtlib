@@ -17,14 +17,12 @@ import System.IO (IOMode (ReadMode), hSetEncoding, utf8, withFile)
 import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
-import Text.Megaparsec (eof, errorBundlePretty, parse)
+import Text.Megaparsec (eof, parse)
 
 import Arbitrary ()
 import Language.SMTLIB
 import Language.SMTLIB.Parser.Command
 import Language.SMTLIB.Parser.Internal
-import Language.SMTLIB.Parser.Response (pCommandResponse)
-import Language.SMTLIB.Parser.SExpr
 import Language.SMTLIB.Parser.Term
 import Language.SMTLIB.Reader (frameAll)
 
@@ -219,7 +217,7 @@ instancesTests = testGroup "Ord / Hashable instances"
   ]
 
 -- | The derived 'Ord' must be consistent with the derived 'Eq'.
-propEqOrd :: (Eq a, Ord a) => a -> a -> Property
+propEqOrd :: Ord a => a -> a -> Property
 propEqOrd x y = (x == y) === (compare x y == EQ)
 
 -- | Structurally-equal values (here, a value against itself) hash equally;
@@ -233,7 +231,7 @@ propMapKey :: Ord a => [a] -> Property
 propMapKey xs = M.size (M.fromList [(x, ()) | x <- xs]) === length (nub xs)
 
 -- | Likewise for 'Data.HashMap' via the 'Hashable'\/'Eq' instances.
-propHashMapKey :: (Eq a, Hashable a) => [a] -> Property
+propHashMapKey :: Hashable a => [a] -> Property
 propHashMapKey xs = HM.size (HM.fromList [(x, ()) | x <- xs]) === length (nub xs)
 
 -- Sample files ---------------------------------------------------------------
