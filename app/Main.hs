@@ -10,7 +10,6 @@ import System.Exit (exitFailure)
 import System.IO (hPutStrLn, stderr)
 
 import Language.SMTLIB
-import Language.SMTLIB.Parser.Command (pScriptLenient)
 
 main :: IO ()
 main = do
