@@ -67,6 +67,7 @@ extra-doc-files:
     README.md
     CHANGELOG.md
     conformance/README.md
+    docs/extensions.md
 
 source-repository head
   type: git
