@@ -43,14 +43,25 @@ module Language.SMTLIB.Parser
   , feed
   , isCleanEnd
   , frameSExpr
+    -- * Command combinators
+    -- | The lower-level command parsers, including the lenient variants
+    -- ('pScriptLenient' \/ 'pCommandLenient') that keep an unrecognized command
+    -- as 'Language.SMTLIB.Syntax.Command.UnknownCommand'.  Run them through
+    -- 'parseWith'.
+  , module Language.SMTLIB.Parser.Command
+    -- * Response combinators
+    -- | The solver-response parsers.  These have no whole-text wrapper of their
+    -- own; run them through 'parseWith'.
+  , module Language.SMTLIB.Parser.Response
   ) where
 
 import Data.Text (Text)
 import Data.Void (Void)
 import Text.Megaparsec hiding (ParseError)
 
-import Language.SMTLIB.Parser.Command (pCommand, pScript)
+import Language.SMTLIB.Parser.Command
 import Language.SMTLIB.Parser.Internal (P, sc)
+import Language.SMTLIB.Parser.Response
 import Language.SMTLIB.Parser.SExpr
 import Language.SMTLIB.Parser.Term (pTerm)
 import Language.SMTLIB.Syntax.Annotation (SrcSpan, noAnn)
