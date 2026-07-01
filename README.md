@@ -118,6 +118,9 @@ driver h = do
   only on an unknown head keyword, so a recognized command with malformed
   arguments still fails. Solver-response parsing (`pCommandResponse`) is always
   lenient, keeping an unrecognized response as `ROther`; both forms round-trip.
+  See [`docs/extensions.md`](docs/extensions.md) for a catalog of the solver
+  extensions found in the cvc5/Z3/Yices2/OpenSMT suites and their support status
+  (extension commands/responses are lenient; term/sort/lexical extensions are not).
 
 ## Building
 
