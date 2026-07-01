@@ -14,11 +14,12 @@
 -- The whole-text entry points are /strict/: an unrecognized command is a parse
 -- error.  For lenient parsing — keeping an unknown command as
 -- 'Language.SMTLIB.Syntax.Command.UnknownCommand' for the application to handle
--- — run the lenient parsers from "Language.SMTLIB.Parser.Command" through
--- 'parseWith', e.g. @'parseWith' 'Language.SMTLIB.Parser.Command.pScriptLenient'@.
--- Solver-response parsing
--- ("Language.SMTLIB.Parser.Response") is always lenient: an unrecognized
--- response is kept as 'Language.SMTLIB.Syntax.Response.ROther'.
+-- — run the lenient parsers ('pScriptLenient' \/ 'pCommandLenient'), re-exported
+-- here from "Language.SMTLIB.Parser.Command", through 'parseWith', e.g.
+-- @'parseWith' 'pScriptLenient'@.  The solver-response parsers (re-exported from
+-- "Language.SMTLIB.Parser.Response") are likewise run through 'parseWith', and
+-- are always lenient: an unrecognized response is kept as
+-- 'Language.SMTLIB.Syntax.Response.ROther'.
 module Language.SMTLIB.Parser
   ( -- * Parser monad
     P
