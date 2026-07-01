@@ -24,14 +24,13 @@ By default command parsing is **strict**: an unrecognized head keyword is a
 parse error. The lenient parsers keep such a command instead:
 
 ```haskell
-import Language.SMTLIB
-import Language.SMTLIB.Parser.Command (pScriptLenient)
+import Language.SMTLIB   -- re-exports pScriptLenient via Language.SMTLIB.Parser
 
 parseWith pScriptLenient "<input>" src
 ```
 
-`pCommandLenient` / `pScriptLenient` (in `Language.SMTLIB.Parser.Command`, run
-through `parseWith`) produce
+`pCommandLenient` / `pScriptLenient` (defined in `Language.SMTLIB.Parser.Command`
+and re-exported from `Language.SMTLIB.Parser`, run through `parseWith`) produce
 
 ```haskell
 UnknownCommand !Symbol [SExpr a]   -- head keyword + raw argument s-expressions

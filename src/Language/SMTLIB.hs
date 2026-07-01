@@ -14,7 +14,6 @@
 module Language.SMTLIB
   ( module Language.SMTLIB.Syntax
   , module Language.SMTLIB.Parser
-  , module Language.SMTLIB.Parser.Response
   , module Language.SMTLIB.Printer
     -- * Error rendering (re-exported from megaparsec)
 
@@ -26,6 +25,5 @@ module Language.SMTLIB
 import Text.Megaparsec (errorBundlePretty)
 
 import Language.SMTLIB.Parser
-import Language.SMTLIB.Parser.Response
 import Language.SMTLIB.Printer
 import Language.SMTLIB.Syntax

@@ -21,7 +21,6 @@ import Text.Megaparsec (eof, parse)
 
 import Arbitrary ()
 import Language.SMTLIB
-import Language.SMTLIB.Parser.Command
 import Language.SMTLIB.Parser.Internal
 import Language.SMTLIB.Parser.Term
 import Language.SMTLIB.Reader (frameAll)

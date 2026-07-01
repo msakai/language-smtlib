@@ -29,6 +29,14 @@ and this project adheres to the
 - Read the `test/samples/smt/` sample files as UTF-8 explicitly, so the test
   suite no longer fails on the non-ASCII samples under a non-UTF-8 locale
   (e.g. `C`/`POSIX`).
+- `Language.SMTLIB.Parser` now re-exports the `Language.SMTLIB.Parser.Command`
+  and `Language.SMTLIB.Parser.Response` combinators, making it the single,
+  complete public parsing API.  The command combinators (including the lenient
+  `pCommandLenient` / `pScriptLenient` variants) are therefore now reachable
+  from the umbrella `Language.SMTLIB` module too, matching the response
+  combinators and removing the need to import `Language.SMTLIB.Parser.Command`
+  separately.  The umbrella drops its own direct `Language.SMTLIB.Parser.Response`
+  re-export, as it now arrives transitively through `Language.SMTLIB.Parser`.
 
 ## 0.1.0.0 - 2026-06-08
 
